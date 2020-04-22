@@ -138,7 +138,7 @@ str(temperature)
 
 # Uh-oh, there's a pretty obvious problem that jumps out at me
 # The "DryWt" column should be numeric, but instead it has
-	# been read as a *factor*
+	# been read as a *factor* (*character* in R 4.0.0)
 # A factor in R is a categorical or classification variable
 
 # Let's take a closer look at just this column
@@ -224,10 +224,12 @@ ncol(temperature)
 
 # We're still in the data exploration stage so
 	# let's get a quick summary of all variables in this object using summary()
+# This is most useful for numeric variables and least
+     # for character variables
 summary(temperature)
 
 # We can also get a summary of a single column
-summary(temperature$Tech)
+summary(temperature$Temp)
 
 ### Reading in the respiration datasets ----
 # The datasets containing the respiration information
@@ -658,30 +660,11 @@ write.csv(x = resptemp, file = "combined_resp_and_temp_data.csv", row.names = FA
 
 # An analysis always start with data exploration,
 	# usually with some sort of data summaries and graphics
+# Here we'll just focus on graphical data exploration
 
 # We are going to compare the means of respiration
 	# between the two temperature groups
 	# so let's look more closely at those groups
-
-# Get a summary of respiration values by temperature group (hot or cold)
-	# Using the "subset" function and "testing for equality", ==
-?subset
-
-subset(resptemp, tempgroup == "Cold")
-
-# We can also just take a subset of a data.frame of only
-	# a few of the columns by adding the select argument
-subset(resptemp, tempgroup == "Cold", select = c("Resp", "tempgroup") )
-
-# We can nest functions rather than making new named objects
-	# if we want if we don't need the objects for later
-# Let's do this while getting a summary of respiration
-	# for each temperature group
-summary( subset(resptemp, tempgroup == "Cold",
-			 select = "Resp") )
-
-summary( subset(resptemp, tempgroup == "Hot",
-			 select = "Resp") )
 
 # Exploratory graphics ----
 
@@ -711,14 +694,18 @@ qplot(x = tempgroup, y = Resp, data = resptemp)
 # If we don't want that NA value, we could
 	# remove any missing values in tempgroup with is.na() and not (!)
 # This means we only want the values of tempgroup that are NOT NA
-qplot(x = tempgroup, y = Resp, data = subset(resptemp, !is.na(tempgroup) ) )
+     # with the subset(0 function
+qplot(x = tempgroup, y = Resp, 
+      data = subset(resptemp, !is.na(tempgroup) ) )
 
 # How about a boxplot?
 # We can do this with qplot(), as well, by adding the "geom" argument
-qplot(x = tempgroup, y = Resp, data = resptemp, geom = "boxplot")
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp, geom = "boxplot")
 
 # Here is the plot without the missing values
-qplot(x = tempgroup, y = Resp, data = subset(resptemp, !is.na(tempgroup) ),
+qplot(x = tempgroup, y = Resp, 
+      data = subset(resptemp, !is.na(tempgroup) ),
 	 geom = "boxplot")
 
 # Maybe it's time to remove that NA point and make a new object
@@ -732,8 +719,10 @@ resptemp2 = subset(resptemp, !is.na(tempgroup) )
 
 # This means adding a layer (literally, with the plus sign)
 	# to qplot()  - in this case, stat_summary
-qplot(x = tempgroup, y = Resp, data = resptemp2, geom = "boxplot") +
-	stat_summary(fun.y = mean, geom = "point", color = "red", size = 3)
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp2, geom = "boxplot") +
+	stat_summary(fun.y = mean, geom = "point", 
+	             color = "red", size = 3)
 
 
 # Histograms can be used
