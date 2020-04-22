@@ -1,0 +1,298 @@
+---
+title: "Getting started in R"
+output: 
+  learnr::tutorial:
+       progressive: TRUE
+       allow_skip: TRUE
+       ace_theme: "crimson_editor"
+runtime: shiny_prerendered
+description: "This tutorial covers some basic information for folks just starting using R via RStudio.  Finding help and the working directory feature prominantly."
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+knitr::opts_chunk$set(error = TRUE)
+
+```
+
+## Introduction
+
+```{r hex, echo = FALSE, out.width = "100px"}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/Rlogo.png")
+```
+
+This tutorial is the first in a series introducing R by working through a practical example.  The scientific goal these tutorials are built around is to read data into R in order to do an analysis.  Along the way you will learn how to work with data in R and see some common issues that can come up.  
+
+The four tutorials are designed to be done in order, but this is not strictly necessary.  Here are the topics covered in the entire workshop series:
+
+- **Tutorial 1: Getting started with R/RStudio**  
+After a brief introduction to RStudio, this tutorial focuses on the help documentation available in R and elsewhere and the working directory.  
+- **Tutorial 2: Reading data into R**   
+You will learn to read three different types of datasets into R and then work on combining them.  You will also learn about installing add-on packages for the first time.
+- **Tutorial 3: Factors and missing values**  
+Learn about factors in R and how R deals with missing values.  This tutorial also talks about making new variables and saving a dataset as a CSV.
+- **Tutorial 4: Graphical data exploration and analysis**  
+The last tutorial introduces some basic graphical data exploration using **ggplot2** prior to analysis and, finally, the two-sample analysis.
+
+###
+
+### Before you begin
+
+As of mid-April 2020, the current R version is 3.6.3 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download).  
+
+Note that R 4.0.0 will be released by the end of April.
+
+The other workshop materials available that you will need if you decide to run through the workshop on your computer and not just in this tutorial are the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  
+
+## Getting started with RStudio
+
+This tutorial assumes you will be working with R through RStudio.  If working along on your own computer, make sure you have RStudio open and ready to go.  If you already have a basic familiarity with RStudio, you might want to skip to the R Help section of this tutorial.  
+
+The very first time you open RStudio you will see three of the four RStudio "panes".  The panes are different sections that make up the main RStudio window.  You can see the `Console` pane on the left, the `Environment` pane on the upper right, and the `Files` pane (along with `Plots`, `Pacakges` and `Help`) on the lower right.
+
+```{r rst1, echo = FALSE, out.width = "100%", dpi = 600}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/rstudio_threepanes.PNG", dpi = 600)
+```
+
+###
+
+###
+
+When you open an R script you'll see the fourth pane show up.   
+
+You can navigate to open the R script you saved as you normally would on your computer and then open it, selecting RStudio if you need to choose a program to open with.  Alternatively, you can navigate through the RStudio `Files` pane, which is the lower right pane in the picture above.  To use the latter option you may need the `...` button on the far right, depending on what your default directory is.
+
+Once you open up the R script I provided, which I named `r_basics_workshop.R` in my example, you will see the fourth pane on the upper left.  This is the `Source` pane. 
+
+```{r rst2, echo = FALSE, out.width = "100%"}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/rstudio_allpanes.PNG")
+```
+
+###
+
+Everything in green in the script in the picture above is a comment.  You make a comment in R by writing text after the pound sign, `#`.  This example script has extensive comments because it is a teaching script.  However, most scripts will contain comments that you write to explain to your future self exactly what you did.  I recommend you get used to writing comments as you write R code.
+
+### Console pane
+
+The `Console` pane is on the lower left of the main window by default.  This is where you will see R output.  You can also type in and run code from here if you don't want to save it.
+
+Here you can see I typed in `4+4` next to the `>` and pushed enter.  The output is shown on the next line.
+
+```{r console, echo = FALSE}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/console1.PNG")
+```
+
+### Source pane
+
+The `Source` pane is where your R scripts will open.  It is on the upper left above the `Console` by default.  Anytime you are working on code you'll want to save, which is most of the time, you'll write the code in an R script saved with a `.R` extension.  For example, I wrote a script with all the code to be used during the workshop.  
+
+To run code from a script you can put your cursor on the line you want to run and push the `Run` button at the top of the pane.  Alternatively, use `Ctrl+Enter` (MacOS `Cmd+Enter`) to run the code from the line your cursor is on. 
+
+In the screenshot below you can see I'm getting ready to run line 22 of the script.
+
+```{r source, echo = FALSE}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/source1.png",
+                        dpi = 300)
+```
+
+### 
+
+You will some features of other RStudio panes throughout the workshop tutorials.  For now the only other thing I will mention is that you can minimize or maximize panes using the squares in the top right corner of each pane.  
+
+```{r minimize, echo = FALSE}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/minimize.png",
+                        dpi = 300)
+```
+
+You can also make panes bigger or smaller by hovering between two panes and then clicking and dragging.
+
+### Global options
+
+My impression is that many people start out using the default settings in RStudio.  That's an absolutely fine thing to do.  However, there are many options you can set to personalize your RStudio experience.  For example, I like to have my `Console` and `Source` panes side by side rather than stacked.  You can change this (and much more) in `Global Options...` from the `Tools` menu.
+
+```{r global, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/global_options.png")
+```
+
+###
+
+The fourth option down is where you can control the panes layout, shown in the picture below.  If you wanted you could change the pane positions away from the default settings using the drop down menus.  You should feel free to explore more of the global options, such as `Appearance`, and see what you like.
+
+```{r layout, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/pane_layout.png")
+```
+
+### Change workspace options
+
+Before going on to the next section, let's talk for a minute about the global options involving **Workspace** and **History**.
+
+I believe it is best practice to start with a clean version of R every time you open a fresh session in RStudio.  However, by default the work you did last time is saved and then reloaded.  If you are new to R this is a good time to change away from the default so you don't start to rely on that behavior.
+
+###
+
+In `Global Options...`, the `General` option will look something like the picture below when you first open it.  This shows all the default settings  In particular note the current state of the check boxes under the titles **Workspace** and **History**.
+
+```{r workspace1, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/save_workspace1.png")
+```
+
+###
+
+I recommend you unclick the boxes in **Workspace** and **History** and choose `Never` from the drop-down menu.  *If loading your workspace when you start R is an important part of your current R workflow, don't follow make this change.* 
+
+These changes will look like:
+
+```{r workspace2, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/save_workspace2.png")
+```
+
+Click `Apply` and `OK` after making these changes to save these as your global options.
+
+## R help
+
+One important thing to talk about as you are first learning R is how to get R help.  I believe learning about getting help is the most useful thing I can teach you.  
+
+There are three main places I look for help when I run into trouble in R, which I'll go through.  
+
+###
+
+### R documentation for a specific function
+
+The first place to look for help is within R, in the R help page documentation.  Every time I use a function for a first time or reuse a function after some time has passed, I spend time looking through the R help page for that function.  You can do this by typing `?functionname` into your Console and pressing enter, where `functionname` is some R function you want to use.  This means you have to know the name of the function you want to use in advance.  
+
+For example, if we wanted to take an average of some numbers with the `mean()` function, we would type `?mean` at the `>` in the R Console and pressing Enter.  The help page for the function opens in the `Help` pane on the lower right of your RStudio window.  
+
+Here's what the top of the help page for `mean()` looks like.
+
+```{r help1, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/mean_help.png")
+```
+
+### Description section
+
+Every help page has the same basic set-up.
+
+At the top you'll see the function name, followed by the package the function is in surrounded by curly braces.  This is followed by a basic description of the function.
+
+```{r help2, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/help_section1.png")
+```
+
+### Usage section
+
+I usually spend at least some time looking at the `Usage` section, since this is where defaults to argument are listed.  The function *arguments* are the labels shown within the function.  You might note here that the `na.rm` argument in `mean()` defaults to `FALSE`, which we'll talk more about in one of the later tutorials.
+
+```{r help3, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/help_section2.png")
+```
+
+### Arguments section
+
+The arguments the function takes and a description of those arguments is given in the `Arguments` section.  This is a section I often spend quite a bit of time in, figuring out what arguments do and the options available for each argument.
+
+```{r help4, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/help_section3.png")
+```
+
+### Examples section
+
+If you scroll to the very bottom of a help page you will find the `Examples` section.  This gives examples of how a function works, which you can copy and paste into your `Console` and run.  You can also highlight the code and run it directly from the help pane with `Ctrl+Enter` (MacOS `Cmd+Enter`).
+
+After looking at `Usage` and `Arguments` I often jump right down to the `Examples` section to see an example using the function.  The `Examples` section for `mean()` is pretty sparse, but you'll find that these are quite extensive for some functions.  
+
+```{r help5, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/help_section4.png")
+```
+
+###
+
+There can be a variety of different information after `Arguments` and before `Examples`, such as a description of what is returned, mathematical notation, references in support of what the function does, etc.  This can be extremely valuable information, but I often don't read it until I run into trouble using the function or need more information to understand exactly what the function does.  
+
+I will spend some time revisiting the R documentation throughout the workshop tutorials to show you how I use it in my daily R work.  
+
+### Stack Overflow
+
+When I'm looking for how to do something in R and I don't have a function name (or sometimes even if I do), I will search the R-tagged questions on the Stack Overflow site.  Stack Overflow is currently very active with R questions and answers, and very often you can find a solution to a problem you are having there based on a question someone else asked.
+
+You can see the R tagged Stack Overflow posts here: http://stackoverflow.com/questions/tagged/r
+
+### RStudio Community
+
+The RStudio Community at https://community.rstudio.com/ is another question-answer site that can be useful when looking for help.  It's newer forum and can feel a little friendlier compared to Stack Overflow.  This makes it a great place to start if you want to ask your first question about an R problem you are having.
+
+You can (and I often do) search the internet via a search engine in your browser, as well, including "R" or "rstats" as part of the search term.    
+
+## The working directory
+
+We'll begin work in R by setting what's called the *working directory*.  The working directory is where R, by default, will go to look for any datasets you load and is the place R will save files you save.  When working on a simple project, I save my R scripts and all files related to that project into a single folder that I set as my working directory.  This makes it so I don't have to write out the whole directory path every time I want to load or save something.  This also helps me keep organized.
+
+###
+
+### Checking your current working directory
+
+To see your default working directory, use the `getwd()` function to *get* your current working directory.  Let's say my default working directory is my "C" drive.  This is is what is returned when I use `getwd()` to see where the working directory is currently set to.
+
+```{r getwd, eval = FALSE}
+getwd()
+```
+
+```{r output, echo = FALSE}
+cat('[1] "C:/"')
+```
+
+### Setting your working directory in RStudio
+
+You can set your working directory in a variety of ways.  These days I often take advantage of RStudio's drop down menus for this. 
+
+If you've already opened the R script you'll be using in the RStudio `Source` pane, as I have in this example, you can use the overall drop-down menus to set the directory to wherever your script is stored: 
+
+```
+Session > Set Working Directory > To Source File Location
+```
+
+```{r setwd1, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/setwd1.png")
+```
+
+###
+
+If you've navigated to the folder where you've stored your files in the RStudio `Files` pane, you can use the pane drop-down menus to set the working directory to that folder: 
+
+```
+More > Set As Working Directory
+```
+
+```{r setwd2, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/setwd2.png")
+```
+
+### Code to set your working directory
+
+You can type out the path to your working directory using the `setwd()` function directly. 
+
+**Important**:  You must either use single forward slashes or double backslashes in the directory path in R instead of the single backslashes. If you work in Windows this will not be what you are used to. 
+
+Below is an example (not run).  
+
+```{r setwd, eval = FALSE}
+setwd("C:/Users/Aosmith/R workshops/r-basics-workshop")
+setwd("C:\\Users\\Aosmith\\R workshops\\r-basics-workshop")
+```
+
+###
+
+Once you've set your working directory, you can check if you've successfully made the change using `getwd()` as above.  You won't generally need to check this every time you change your working directory, but it is always an option if you are having trouble reading a dataset and need to figure out what your current working directory is.
+
+After I navigated to where my datasets and script are stored and set the working directory to that folder you can see my current working directory has changed.
+
+```{r lastcheck, eval = FALSE}
+getwd()
+```
+
+```{r output2, echo = FALSE}
+cat('[1] "C:/Users/Aosmith/R workshops/r-basics-workshop"')
+```
+
+###
+
+Once you've set your working directory to the folder where you've stored your script and datasets you are ready to read in some datasets.  We'll talk about reading in datasets in general and how to read different kinds of datasets into R in the second tutorial.
