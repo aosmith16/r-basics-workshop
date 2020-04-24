@@ -138,8 +138,8 @@ str(temperature)
 
 # Uh-oh, there's a pretty obvious problem that jumps out at me
 # The "DryWt" column should be numeric, but instead it has
-	# been read as a *factor* (*character* in R 4.0.0)
-# A factor in R is a categorical or classification variable
+	# been read as a *character* (a *factor* in R versions before 4.0.0)
+# Character and factor variables are types of categorical variables in R
 
 # Let's take a closer look at just this column
 # I'm going to do this using dollar sign notation, where I write out
@@ -156,13 +156,13 @@ temperature$DryWt
 # It turns out that this file was used in SAS at some point,
 	# and the "." represents a missing value
 # We failed to tell R that, though, so it did the best it could
-	# with the given info and called the entire column a factor
+	# with the given info and called the entire column categorical
 
 # We can tell R what character represents missing values
 	# by using the "na.strings" argument
 
 # The most common reason I've seen
-  	# that numeric variables are read as factors in R is
+  	# that numeric variables are read as categorical in R is
 	# due to the character chosen to be a
   	# missing value - "na", "n/a", "N/A", etc., without telling R
 # The second most common reason is when someone has
@@ -265,7 +265,9 @@ respspring = read.csv("spring resp.csv")
 
 # If we wanted to type out code to install packages,
 	# we could do so via the install.packages() function
-install.packages("readxl")
+     # I've commented this out so it doesn't run
+     # every time I use this script
+# install.packages("readxl")
 
 # Please note that you only need to install packages once;
 	# after that the package is available to be loaded
@@ -298,16 +300,18 @@ library(readxl)
 	# much like read.csv() with the default of header = TRUE
 respfall = read_excel("fall resp.xlsx", sheet = 1)
 
+#### Working with dates
 # Check the structure of the two datasets in the Environment pane
 
 # The read_excel() function read the "Date" variable as actual dates
 	# in POSIXct format (POSIXct indicates a date-time variable),
-	# but read.csv() read the dates as factors
+	# but read.csv() read the dates as a categorical variable
 # Our life will be easier if the variables are the same kind of variable
 	# when we attempt to combine the datasets
 
 # Here is an example of changing the "Date" variable
 	# to a date with as.Date() in both datasets
+# We'll need the "format" argument in the documentation
 ?as.Date
 
 # This is good for you to get exposure to,
@@ -319,7 +323,7 @@ respfall = read_excel("fall resp.xlsx", sheet = 1)
 	# (i.e., the order that day month and year appear in the date)
 	# and the delimiter used in the date (in this case a forward slash)
 respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
-		# We will overwrite the factor variable
+		# We will overwrite the original variable
 			# with the date variable by giving it the same name, "Date"
 
 # We can do the same thing for respfall
@@ -428,50 +432,50 @@ library(dplyr)
 
 # We use the by argument to tell R which variables to match on (more on this below)
 # We put respall as the "x" dataset and temperature is the "y" dataset
-anti_join(respall, temperature, by = "Sample")
+anti_join(x = respall, y = temperature, by = "Sample")
 
 # It is sample 21 that is missing from the temperature dataset
 
-# Merge the temperature and respiration datasets ----
+# Join the temperature and respiration datasets ----
 
-# Let's join our two datasets together using the "merge" function
+# Let's join our two datasets together using the inner_join()
+     # function from package dplyr
 	# We'll match by the "Sample" column in each
-?merge
+# Check the documentation for a description of an inner join
+     # which joins only the rows that match in each dataset
 
 # By default the "merge" function merges on
 	# all columns that have the same name in both datasets
 # Example:
-resptemp = merge(respall, temperature)
+resptemp = inner_join(x = respall, y = temperature, by = "Sample")
 head(resptemp)
 # Check structure in Environment pane
 
-# You can also choose the column names you want to merge by
-	# which will make sure you know exactly which variables you are merging
-	# on and makes your code more explicit
-
-# If the names are the same:
-merge(respall, temperature, by = "Sample")
-
-# What if the names are different?
+# What if the names of the unique identifier was different?
 # Let's make a duplicate temperature dataset called
 	# "temp2" and change the name of the "Sample" column
 temp2 = temperature
 names(temp2)[1] = "Samplenum"
 
-merge(respall, temp2, by.x = "Sample", by.y = "Samplenum")
-	# Notice the name in the merged dataset is from the "x" dataset,
+# Here's how what the code looks like, listing the
+     # column name in the first datasest first
+inner_join(x = respall, y = temp2, by = c("Sample" = "Samplenum") ) 
+	# Notice the name in the joined dataset is from the "x" dataset,
 		# which is the dataset we list first
 
-# There are only 59 observations in our merged data frame resptemp
+# There are only 59 observations in our joined data frame resptemp
 # This is because the sample missing from the temperature dataset
-	# was dropped during the merge
+	# was dropped during the inner join
 
-# To keep all observations regardless of if they have a value in both datasets,
-	# set "all" to TRUE in merge()
-head(resptemp)  # You can see that sample 21 is missing
+# To keep all observations in the first dataset
+     # regardless of if they have a value in both datasets,
+	# use a left_join()
 # Let's make a new resptempt dataset, this time keeping all rows from both datasets
-resptemp = merge(respall, temperature, by = "Sample", all = TRUE)
-head(resptemp)  # Now sample 21 is here, with NA in the Tech, Temp, and DryWt columns
+resptemp = left_join(x = respall, y = temperature, by = "Sample")
+nrow(resptemp)  # Now all 60 rows are present
+
+# The temperature data for sample 21 are all NA
+head(resptemp, n = 10)
 
 # OK, we're starting to get somewhere:
 	# we have a single dataset to work with

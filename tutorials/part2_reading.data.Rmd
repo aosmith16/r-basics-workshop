@@ -1,0 +1,876 @@
+---
+title: "Getting started in R"
+output: 
+  learnr::tutorial:
+       progressive: TRUE
+       allow_skip: TRUE
+       ace_theme: "crimson_editor"
+       df_print: "default"
+runtime: shiny_prerendered
+description: "This tutorial covers some basic information for folks just starting using R via RStudio.  Finding help and the working directory feature prominantly."
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+# In case working on their own computer and need to install packages
+if(!require("readxl")){
+    install.packages("readxl", repos = "http://cran.us.r-project.org")
+    library("readxl")
+}
+if(!require("dplyr")){
+    install.packages("dplyr", repos = "http://cran.us.r-project.org")
+    library("dplyr")
+}
+knitr::opts_chunk$set(error = TRUE, tidy = FALSE)
+t1 = structure(list(Sample = c(18L, 20L, 22L, 19L, 31L, 30L, 28L, 
+32L, 29L, 24L, 25L, 27L, 23L, 26L, 74L, 77L, 76L, 73L, 75L, 33L, 
+36L, 37L, 35L, 34L, 44L, 43L, 46L, 45L, 47L, 71L, 72L, 68L, 69L, 
+70L, 50L, 51L, 48L, 49L, 52L, 57L, 53L, 54L, 56L, 55L, 41L, 42L, 
+39L, 38L, 40L, 65L, 67L, 64L, 63L, 66L, 60L, 58L, 59L, 62L, 61L
+), Tech = c("Mark", "Raisa", "Nitnoy", "Nitnoy", "Stephano", 
+"Stephano", "Cita", "Raisa", "Raisa", "Cita", "Fatima", "Raisa", 
+"Fatima", "Mark", "Raisa", "Nitnoy", "Raisa", "LaVerna", "Raisa", 
+"Nitnoy", "Raisa", "Cita", "Stephano", "LaVerna", "Stephano", 
+"Mark", "Raisa", "Stephano", "Cita", "Raisa", "Mark", "Raisa", 
+"Mark", "Fatima", "Mark", "Stephano", "Mark", "Raisa", "Raisa", 
+"Nitnoy", "Nitnoy", "Stephano", "Fatima", "Stephano", "Raisa", 
+"Nitnoy", "Fatima", "Nitnoy", "Raisa", "Fatima", "Cita", "LaVerna", 
+"Raisa", "Mark", "Fatima", "Nitnoy", "Cita", "Mark", "Raisa"), 
+    Temp = c(4.5, 4.5, 4.5, 4.5, 5, 5, 5, 5, 5, 5.5, 5.5, 5.5, 
+    5.5, 5.5, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 10.5, 10.5, 10.5, 
+    10.5, 10.5, 11.5, 11.5, 11.5, 11.5, 11.5, 13, 13, 13, 13, 
+    13, 14, 14, 14, 14, 14, 14.5, 14.5, 14.5, 14.5, 14.5, 16, 
+    16, 16, 16, 16, 19, 19, 19, 19, 19), DryWt = c("0.569", "0.597", 
+    "0.603", "0.607", "0.611", "0.613", "0.622", "0.626", "0.634", 
+    "0.565", "0.61", "0.62", ".", "0.64", "0.656", "0.661", "0.685", 
+    "0.695", "0.701", "0.528", "0.574", "0.619", "0.627", "0.642", 
+    "0.62", "0.65", "0.67", "0.728", "0.679", "0.753", "0.759", 
+    "0.77", "0.781", "0.786", "0.727", "0.785", "0.787", "0.793", 
+    "0.795", "0.709", "0.765", "0.768", "0.791", "0.804", "0.694", 
+    "0.709", "0.732", "0.739", "0.749", "0.82", "0.836", "0.844", 
+    "0.848", "0.859", "0.779", "0.801", "0.808", "0.828", "0.83"
+    )), class = "data.frame", row.names = c(NA, -59L))
+t2 = structure(list(Sample = c(18L, 20L, 22L, 19L, 31L, 30L, 28L, 
+32L, 29L, 24L, 25L, 27L, 23L, 26L, 74L, 77L, 76L, 73L, 75L, 33L, 
+36L, 37L, 35L, 34L, 44L, 43L, 46L, 45L, 47L, 71L, 72L, 68L, 69L, 
+70L, 50L, 51L, 48L, 49L, 52L, 57L, 53L, 54L, 56L, 55L, 41L, 42L, 
+39L, 38L, 40L, 65L, 67L, 64L, 63L, 66L, 60L, 58L, 59L, 62L, 61L
+), Tech = c("Mark", "Raisa", "Nitnoy", "Nitnoy", "Stephano", 
+"Stephano", "Cita", "Raisa", "Raisa", "Cita", "Fatima", "Raisa", 
+"Fatima", "Mark", "Raisa", "Nitnoy", "Raisa", "LaVerna", "Raisa", 
+"Nitnoy", "Raisa", "Cita", "Stephano", "LaVerna", "Stephano", 
+"Mark", "Raisa", "Stephano", "Cita", "Raisa", "Mark", "Raisa", 
+"Mark", "Fatima", "Mark", "Stephano", "Mark", "Raisa", "Raisa", 
+"Nitnoy", "Nitnoy", "Stephano", "Fatima", "Stephano", "Raisa", 
+"Nitnoy", "Fatima", "Nitnoy", "Raisa", "Fatima", "Cita", "LaVerna", 
+"Raisa", "Mark", "Fatima", "Nitnoy", "Cita", "Mark", "Raisa"), 
+    Temp = c(4.5, 4.5, 4.5, 4.5, 5, 5, 5, 5, 5, 5.5, 5.5, 5.5, 
+    5.5, 5.5, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 10.5, 10.5, 10.5, 
+    10.5, 10.5, 11.5, 11.5, 11.5, 11.5, 11.5, 13, 13, 13, 13, 
+    13, 14, 14, 14, 14, 14, 14.5, 14.5, 14.5, 14.5, 14.5, 16, 
+    16, 16, 16, 16, 19, 19, 19, 19, 19), DryWt = c(0.569, 0.597, 
+    0.603, 0.607, 0.611, 0.613, 0.622, 0.626, 0.634, 0.565, 0.61, 
+    0.62, NA, 0.64, 0.656, 0.661, 0.685, 0.695, 0.701, 0.528, 
+    0.574, 0.619, 0.627, 0.642, 0.62, 0.65, 0.67, 0.728, 0.679, 
+    0.753, 0.759, 0.77, 0.781, 0.786, 0.727, 0.785, 0.787, 0.793, 
+    0.795, 0.709, 0.765, 0.768, 0.791, 0.804, 0.694, 0.709, 0.732, 
+    0.739, 0.749, 0.82, 0.836, 0.844, 0.848, 0.859, 0.779, 0.801, 
+    0.808, 0.828, 0.83)), class = "data.frame", row.names = c(NA, 
+-59L))
+s1 = structure(list(Sample = c(26L, 23L, 25L, 27L, 24L, 19L, 20L, 
+22L, 18L, 21L, 29L, 32L, 31L, 30L, 28L, 41L, 40L, 38L, 42L, 39L, 
+35L, 34L, 36L, 33L, 37L, 45L, 47L, 44L, 43L, 46L), Date = c("2/1/1987", 
+"2/1/1987", "2/1/1987", "2/1/1987", "2/1/1987", "1/1/1987", "1/1/1987", 
+"1/1/1987", "1/1/1987", "1/1/1987", "3/1/1987", "3/1/1987", "3/1/1987", 
+"3/1/1987", "3/1/1987", "5/1/1987", "5/1/1987", "5/1/1987", "5/1/1987", 
+"5/1/1987", "4/1/1987", "4/1/1987", "4/1/1987", "4/1/1987", "4/1/1987", 
+"6/1/1987", "6/1/1987", "6/1/1987", "6/1/1987", "6/1/1987"), 
+    Resp = c(0.057, 0.085, 0.159, 0.266, 0.368, 0.074, 0.089, 
+    0.117, 0.135, 0.287, 0.063, 0.064, 0.073, 0.074, 0.093, 0.092, 
+    0.097, 0.178, 0.267, 0.302, 0.097, 0.105, 0.116, 0.176, 0.185, 
+    0.043, 0.122, 0.175, 0.207, 0.523)), class = "data.frame", row.names = c(NA, 
+-30L))
+f1 = structure(list(Sample = c(53, 55, 54, 57, 56, 51, 52, 48, 49, 
+50, 68, 71, 70, 72, 69, 67, 63, 66, 65, 64, 61, 59, 62, 60, 58, 
+75, 76, 74, 73, 77), Date = structure(c(554774400, 554774400, 
+554774400, 554774400, 554774400, 552096000, 552096000, 552096000, 
+552096000, 552096000, 562723200, 562723200, 562723200, 562723200, 
+562723200, 560044800, 560044800, 560044800, 560044800, 560044800, 
+557452800, 557452800, 557452800, 557452800, 557452800, 565315200, 
+565315200, 565315200, 565315200, 565315200), class = c("POSIXct", 
+"POSIXt"), tzone = "UTC"), Resp = c(0.093, 0.111, 0.143, 0.205, 
+0.224, 0.058, 0.081, 0.089, 0.106, 0.119, 0.05, 0.07, 0.08, 0.094, 
+0.114, 0.063, 0.065, 0.072, 0.086, 0.107, 0.08, 0.085, 0.121, 
+0.207, 0.274, 0.023, 0.052, 0.055, 0.069, 0.076)), row.names = c(NA, 
+-30L), class = c("tbl_df", "tbl", "data.frame"))
+```
+
+## Introduction
+
+```{r hex, echo = FALSE, out.width = "100px"}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/Rlogo.png")
+```
+
+This tutorial is the second in a series of four introducing you to the basics of R by working through a practical example.  The focus of this tutorial is on reading data from three different file types and combining them.  The three file types used are CSV, TXT, and XLSX.  You will also learn about installing and loading an add-on package.
+
+###
+
+###
+
+The scientific goal these tutorials are built around is to perform an analysis of some collected data.  Along the way you will learn how to work with data in R and see some common issues that can come up.  
+
+The four tutorials are designed to be done in order, but this is not strictly necessary.  Here are the topics covered in the entire workshop series:
+
+- **Tutorial 1: Getting started with R/RStudio**  
+After a brief introduction to RStudio, this tutorial focuses on the help documentation available in R and elsewhere and the working directory.  
+- **Tutorial 2: Reading data into R**   
+You will learn to read three different types of datasets into R and then work on combining them.  You will also learn about installing add-on packages for the first time.
+- **Tutorial 3: Factors and missing values**  
+Learn about factors in R and how R deals with missing values.  This tutorial also talks about making new variables and saving a dataset as a CSV.
+- **Tutorial 4: Graphical data exploration and analysis**  
+The last tutorial introduces some basic graphical data exploration using **ggplot2** prior to analysis and, finally, the two-sample analysis.
+
+### Before you begin
+
+As of April 24, 2020, the current R version is 4.0.0 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer if you haven't already.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download).  
+
+If you decide to run through the workshop on your computer and not just in this tutorial you will need the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  
+
+## Reading in a text file
+
+The overall analysis goal today is to compare mean respiration for "Cold" and "Hot" sites.  As often happens with data from real studies, the information we need to use for the analysis is currently stored in three separate datasets.  We will spend time in this tutorial reading these three datasets into R and combining them in preparation for the analysis.
+
+At the end of the first tutorial in the series you set your working directory to the folder these three files were saved in.  This tutorial is going to move forward assuming you've done this.
+
+I've purposefully made the three datasets different types of files so you will have a chance to see the different functions we can use to read datasets into R.  We'll start with the dataset that contains the temperature information, called `temp.txt`.
+
+###
+
+### The read.table() function
+
+The temperature data are in a whitespace-delimited text file, so we'll read the dataset in using `read.table()`.  You should make it a habit to check out the help files when you are using a function for the first time so you know what the default settings are and to see what things you can control with different function arguments.  You can do this by typing `?read.table` in the Console and pressing enter.
+
+In the `read.table()` documentation, take a look at the `header` argument.  In the `Usage` section you can see that the default is `header = FALSE`.
+
+The description for `header`, listed in the `Arguments` section, is:
+
+> a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.
+
+What this all means is that we will need to tell R that our dataset contains column names via the `header` argument.  This is commonly how we would store data in a file, and it means that the very first row of our dataset has the variable names in it.  
+
+### Read the temperature dataset
+
+We'll assign the name `temperature` to this dataset when we bring it in R.  You will see throughout the tutorial that assigning names to R *objects* is a key part of using R.  I use `=` for assignment; the most common assignment operator you will see is `<-`.  Pick whichever you like in your work and stick with it.
+
+This is what the code looks like when it's ready to run.
+
+```{r readtable1, eval = FALSE}
+temperature = read.table("temp.txt", header = TRUE)
+```
+
+You should name datasets whatever you like, although I personally recommend names that are easy to type.  In R, datasets are called `data.frames`, and you could refer to `temperature` as a *`data.frame object`*.  I will be using the words *dataset* and *data.frame* interchangeably throughout the tutorial. 
+
+###
+
+Notice that you can now see an object named `temperature` in the RStudio `Environment` pane in the upper right.  This indicates you have successfully imported the dataset.  
+
+```{r env1, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/environment.png")
+```
+
+###
+
+If your dataset isn't in your current working directory, you need to write out the path to wherever the file is located.  You must either use forward slashes, like I demonstrate below, or double backslashes (this code is not run).
+
+```{r readtable2, eval = FALSE}
+temperature = read.table("C:/Users/Aosmith/R workshops/r-basics-workshop/temp.txt",
+                         header = TRUE) 
+```
+
+### The dataset structure
+
+The first thing to do after reading in a dataset is to take a look at it to make sure everything looks the way you expect it to.  We can check the basic *structure* of the dataset with the `str()` function.  In RStudio, we can click on the arrow next to the object name in the `Environment` pane to see the structure of the dataset, as well.
+
+Here's what running the `str()` function in the `Console` would look like.  You can see the size of the dataset (rows and columns) and the names and type of each variable.
+
+```{r setup1, echo = FALSE}
+temperature = t1
+```
+
+```{r temp5, exercise = TRUE, exercise.setup = "setup1"}
+str(temperature)
+```
+
+Here's an example of what clicking the arrow in the `Environment` pane looks like.  It gives the same information.
+
+```{r env2, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/environment2.png")
+```
+
+### Variable type issue
+
+Uh-oh, I see a problem right away.  You can see the `str()` function above tells us what kind of variable each column in the dataset contains.  `DryWt` should be numeric, but R read it in as a character.  If you are using a pre-4.0.0 version of R it will be read as a factor.  Character and factor variables in R are both types of *categorical* variables.  
+
+We need to figure out what's going on.  Let's take a closer look at just that single column.  We can do this by printing out the column as a vector of values into the `Console`.  
+
+###
+
+To work directly with a single column from a dataset, we need to indicate to R the variable we want and what object that variable is stored in.  There are a variety of ways to do this, but a simple way that we will use today is to use dollar sign notation.  
+
+In dollar sign notation we write out the name of the `data.frame` the variable is in, a dollar sign (`$`), and the name of the variable we are interested in.  Here we tell R that we want to use the `temperature` dataset and pull out the `DyrWt` column.
+
+```{r drywt, exercise = TRUE, exercise.setup = "setup1"}
+temperature$DryWt
+```
+
+Can you see that one of the values is a period, `.`, all by itself?  A period by itself is a character, not a number, and so when R found a character in that column it defaulted to making the whole column a categorical variable.
+
+### Defining na.strings
+
+It turns out that this dataset was used in SAS at some point, and that the period represents a missing value.  We will need to tell R that `.` means `NA` so it reads the dataset correctly.  We do this by taking advantage of the the argument `na.strings` in `read.table()`.  You see the description in the documentation:
+
+> a character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values in logical, integer, numeric and complex fields. Note that the test happens after white space is stripped from the input, so na.strings values may need their own white space stripped in advance.  
+
+This indicates that R considers `NA` or blank fields as missing values.  If you use anything else to indicate a missing value you need to tell R what it is via `na.strings`.
+
+###
+
+I didn't tell you about the `.` earlier because I wanted you to see this happen.  This is a common hurdle for people when they first start to use R; if you look around online you'll see many people asking questions that boil down to a numeric variable that R read as categorical.  
+
+For your reference, there are two main reasons I've seen that cause this problem.  First, like in this example, is missing values stored as some miscellaneous character value, such as as `na` or `n/a` or `N/A`.  The second situation I've commonly seen is when folks have stored their large numbers with commas in them like, e.g, `1,112` instead of `1112`.  The easiest way to avoid the second is to not store numbers like that, but if you do there is help online to show you what to do.
+
+Let's read in the dataset again, this time using the `na.strings` argument to indicate that missing values are represented by `"."`.  We will name the object `temperature` again, replacing the previous version with the new one.
+
+```{r readtable3, eval = FALSE}
+temperature = read.table("temp.txt", header = TRUE, na.strings = ".")
+```
+
+How does the structure look now?  
+
+```{r setup2, echo = FALSE}
+temperature = t2
+```
+
+```{r str2, exercise = TRUE, exercise.setup = "setup2"}
+str(temperature)
+```
+
+You can see `DryWt` is numeric, as it should be.
+
+## Initial exploration of a dataset
+
+Now that things look better, let's look at some more options for exploring a dataset when we first read it in.
+
+If you run the name of this dataset, the whole dataset will print into the `Console`.  This isn't that useful unless the dataset is fairly small.
+
+```{r temp, exercise = TRUE, exercise.setup = "setup2"}
+temperature
+```
+
+###
+
+### 
+
+If you click on the `temperature` object in your RStudio `Environment` pane, you can see the dataset in your `Source` pane.  You cannot edit the dataset from here, but this is another way that you can get a sense of what the dataset looks like.  You can also do some basic filtering via this RStudio method.
+
+```{r view, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/view_data.png")
+```
+
+###
+
+You can look at only the first or last six rows of your dataset by using `head()` or `tail()`, respectively, to get an idea of what a dataset looks like without printing the whole thing into the Console.  This can be useful for long datasets.
+
+Here's the first six rows:
+
+```{r temp2, exercise = TRUE, exercise.setup = "setup2"}
+head(temperature)
+```
+
+And the last six rows:
+
+```{r temp2-2, exercise = TRUE, exercise.setup = "setup2"}
+tail(temperature)
+```
+
+###
+
+If you need to check the *names* of the variables (which I invariably forget), you can see the column names with the `names()` function.  This is useful, as the column names are often used when working with data in R.
+
+```{r temp3, exercise = TRUE, exercise.setup = "setup2"}
+names(temperature)
+```
+
+Speaking of names, it's important that you recognize that R is case sensitive.  This means that it reads upper and lower case letters differently (e.g., "A" is different than "a").  Be sure to watch out for this when working with categorical variables and names.
+
+###
+
+Let's take a look at the dataset dimensions. This is another check to do to make sure the dataset was read in correctly.  
+
+A `data.frame` in R has two dimensions, rows and columns.  A `data.frame` can't be *ragged*, but instead is always rectangular.  This means each column is the same length as every other column and each row is the same width as every other row.  If your real dataset is not rectangular, any blanks will be filled in with missing values (`NA`).  
+
+We can see the dimensions of our object in our RStudio `Environment` pane as shown earlier, or check the dimensions using `dim()`, `nrow()`, and/or `ncol()`.
+
+Both dimensions (rows then columns):
+
+```{r temp4, exercise = TRUE, exercise.setup = "setup2"}
+dim(temperature)
+```
+
+Number of rows:
+
+```{r temp4-2, exercise = TRUE, exercise.setup = "setup2"}
+nrow(temperature)
+```
+
+Number of columns:
+
+```{r temp4-3, exercise = TRUE, exercise.setup = "setup2"}
+ncol(temperature)
+```
+
+###
+
+While we're in the data exploration stage, let's get summary information on the whole dataset with `summary()`.  This returns summary statistics for each numeric column, the total column length for character variables, and a tally of the number of observations in each category (aka *levels*) if you have factors (we'll talk more about factors in tutorial 3).
+
+```{r temp6, exercise = TRUE, exercise.setup = "setup2"}
+summary(temperature)
+```
+
+###
+
+The `summary()` function can also be used on single columns of a dataset.  This tends to be most useful for numeric variables. Below summarize just the `Temp` variable.
+
+```{r temp7, exercise = TRUE, exercise.setup = "setup2"}
+summary(temperature$Temp)
+```
+
+## Reading in comma-delimited files
+
+Now that we've successfully read the temperature dataset into R, we'll move on to reading in the respiration data.  The respiration data are stored in two different files, one with information from sampling in the spring (`spring resp.csv`) and one from fall sampling (`fall resp.xlsx`).
+
+We'll read the spring dataset in first.  This is a comma-delimited file, so column information is separated by commas.  We could either use `read.table()` again and define the variable separator as a comma with the `sep` argument, or use the convenience function `read.csv()`.  We'll use the latter.  
+
+###
+
+###
+
+There aren't any missing values in this dataset so we don't have to use the `na.strings` argument.  If you look at the documentation at `?read.csv()` you'll see in `Usage` section that the default setting for the `header` argument is `TRUE`.  I show this section of the documentation below.
+
+```{r readcsv, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/readcsv.png")
+```
+
+This means, unlike `read.table()`, we don't need to specify this in our code since our dataset has variable names as the first row.
+
+###
+
+We'll name the spring respiration dataset `respspring`.  We don't need to write out the file path because this dataset is in our working directory.
+
+```{r spring, eval = FALSE}
+respspring = read.csv("spring resp.csv")
+```
+
+Take a moment to look at the first six lines of this dataset with `head()`.  Write the code for this in the code box below and then run it.  If you need help, take a look at the `Solution`.
+
+```{r setup3, echo = FALSE}
+temperature = t2
+respspring = s1
+```
+
+```{r springtest, exercise = TRUE, exercise.setup = "setup3"}
+
+```
+
+```{r springtest-solution}
+head(respspring)
+```
+
+## Installing an add-on package
+
+The fall respiration dataset is in an Excel file ending with `.xlsx`.  Excel files can't be read into R with any built-in functions.  However, there are many add-on packages that people have written and made available to make reading in data from Excel straightforward.  Most file types can be read into R as long as you find and install the correct package.
+
+In this tutorial you'll use an add-on package called **readxl** to read the fall respiration dataset into R.  If you've never used this package before on your computer, you will need to install it.  You can install packages through RStudio's `Packages` pane.  Note the `Install` button in the picture below.
+
+```{r packages, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/packages.png")
+```
+
+###
+
+###
+
+You need to know the package name that you want to install and type it in the **Packages** field in the pop-up window that comes up after clicking `Install`.  
+
+```{r install, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/install.png")
+```
+
+###
+
+You could also run the code `install.packages("readxl")` to do the same thing.  
+
+**Important**: Packages only need to be installed one time onto a computer, and will be available in future R sessions.  There is absolutely no need to go through the trouble of reinstalling it every time you open R.  For that reason, you shouldn't include `install.packages()` code in a working script.  
+
+### Loading an add-on package
+
+Once the package is installed, you can load a package into R using the `library()` function.  
+
+Unlike package installation, you do need to load add-on packages each time you use them in a new R session.  Here's a nice picture by [Dianne Cook](https://twitter.com/visnut/status/1248166446867181568) that explains `install.packages()` vs `library()` well.
+
+```{r install-lib, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/install.v.library.png")
+```
+
+## Reading in an Excel spreadsheet
+
+Load **readxl** to start reading in the fall respiration dataset.
+
+```{r fall}
+library(readxl)
+```
+
+Once a package is loaded, you can look at help pages for any functions the package contains in the usual way.  The function of interest today is the `read_excel()` function
+
+Here is an example of the documentation in the `Help` pane after running `?read_excel`.  
+
+```{r readxl, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/readxl.png")
+```
+
+###
+
+###
+
+A primary difference when loading Excel documents with `read_excel()` compared to what we've done so far is that we'll need to tell R which worksheet we want to read in.  We can do this by giving either the index (`1` in this case, as it's the very first sheet) or name of the sheet (here `Sheet1`) via the `sheet` argument.  It seems easiest in this simple case, where there's only one worksheet, to use the index.  We'll name the new dataset `respfall`.
+
+Notice that, much like `read.csv()` and `header`, the default setting for the `col_names` argument in `read_excel` is `TRUE` (scroll back up to the documentation screenshot above to see this).  We don't need to include the `col_names` argument in the code because the first row of our dataset contains the variable names.
+
+```{r fall3, eval = FALSE}
+respfall = read_excel("fall resp.xlsx", sheet = 1)
+```
+
+Take a moment to look at the first six lines of this dataset by writing the code in the code box below.
+
+```{r setup4, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+```
+
+```{r falltest, exercise = TRUE, exercise.setup = "setup4"}
+
+```
+
+```{r falltest-solution}
+head(respspring)
+```
+
+## Working with dates
+
+Now that we have the two respiration datasets, let's check the structure of both of them.
+
+```{r resp, exercise = TRUE, exercise.setup = "setup4"}
+str(respspring)
+```
+
+
+```{r resp-2, exercise = TRUE, exercise.setup = "setup4"}
+str(respfall)
+```
+
+Hmm, the `Date` column in `respspring` is categorical but the same column is a *POSIXct* (aka date-time) variable in `respfall`.  This is due to some differences in the `read_excel()` function compared to `read.csv()`.  We are going to want to *stack* these two datasets together into one, but we will have difficulty if the columns with the same names contain very different variable types like this. 
+
+###
+
+###
+
+Let's change the `Date` variable to a date in both datasets with the function `as.Date()`.  While we will not go into this in great detail, I think it is good for you to see this.  I've seen many people struggle with dates in R when they are first getting started.
+
+The `format` argument is an important one to make note of in the documentation.
+
+```{r dates, eval = FALSE}
+?as.Date
+```
+
+```{r asdate, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/asdate.png")
+```
+
+###
+
+We need to tell R what *format* our date is in with the `format` argument of `as.Date()`.  This means we will tell R the order the months, days, and years are in our dataset as well as what separator is used between them.  In `respspring`, our separator is a forward slash (`/`) and the order is month/day/year.  Years are four digits.
+
+Notice that I'm replacing the variable in `respspring` with the new variable by assigning it to the same name.  If I didn't name this variable as I changed it to a date, these changes would *not* take place in the dataset.  Instead the output would show in the `Console` but the original dataset would be unchanged.  
+
+I use dollar sign notation to refer to the column `Date` in the `respspring` dataset.
+
+```{r dates2, eval = FALSE}
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y") 
+```
+
+###
+
+We can do the same thing for `respfall`, but the date is in a different format.  The separator is a hyphen and the order is year-month-day so we write the `format` differently.  Years are still four digits.
+
+```{r dates3, eval = FALSE}
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+```
+
+###
+
+Now look at the structure of the two datasets again, using the `str()` function.
+
+```{r setup5, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y") 
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+```
+
+```{r spring2, exercise = TRUE, exercise.setup = "setup5"}
+
+```
+
+```{r spring2-solution}
+str(respspring)
+str(respfall)
+```
+
+The two datasets now have the same format (`Date`); problem solved.
+
+## Adding a new variable to a dataset
+
+As I mentioned earlier, we want to combine these two datasets by stacking one on top of the other.  Let's add a column to each of them to represent `season` prior to combining them.  It turns out this isn't too hard.  We define a new variable name in the dataset and assign whatever values we want to that new variable using dollar sign notation.
+
+In this case, we'll make a new variable called `season` with a value of `spring` in the `respspring` dataset.  R handily repeats the value of spring for all rows of the dataset.  
+
+This behavior of repeating a value to fill in all the rows of a dataset is called *recycling*, and can be very efficient in a case like this.  Be careful, though; recycling can lead to mistakes if you are assigning more than one value to a new variable and the order doesn't match the order of the dataset.
+
+Here's the datasets before adding the variable:
+
+```{r addvar, exercise = TRUE, exercise.setup = "setup5"}
+head(respspring)   # The original dataset only has 3 variables
+```
+
+And after:
+
+```{r addvar-2, exercise = TRUE, exercise.setup = "setup5"}
+respspring$season = "spring"   # Add the column "season" with the category of "spring"
+head(respspring)   # Now there is a 4th variable names "season"
+```
+
+###
+
+###
+
+We'll add a `season` variable to `respfall`,as well, with a value of `fall`.
+
+```{r setup6, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+```
+
+```{r addvar2, exercise = TRUE, exercise.setup = "setup6"}
+respfall$season = "fall"
+head(respfall)
+```
+
+## Stacking two datasets
+
+Now we can combine these two datasets into a single dataset using the `rbind()` function.  The *r* in `rbind()` stands for *row*.
+
+The function `rbind()` stacks all the rows in the datasets *based on matching names*.  You would only see this if you delved deeply into the `Details` section of the help file at `?rbind`.  This is a time where reading the information between the `Arguments` and the `Examples` was useful to me.
+
+```{r rbindpic, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/rbind.png")
+```
+
+Do our variable names match between datasets?
+
+```{r setup7, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+```
+
+```{r rbind2, exercise = TRUE, exercise.setup = "setup7"}
+names(respspring)
+```
+
+```{r rbind2-2, exercise = TRUE, exercise.setup = "setup7"}
+names(respfall) 
+```
+
+###
+
+### Changing column names
+
+We made our names all the same, which avoids any problems when using `rbind()`.  What if we hadn't?  
+
+We can change column names by *assigning* new ones.  Below we will change the name for the `season` column in `respfall` to `Season` (with a capital "S").  We essentially replace the four original column names with four new ones.
+
+Here are the original names:
+
+```{r rename, exercise = TRUE, exercise.setup = "setup7"}
+names(respfall)
+```
+
+This is what looks like after assigning new names (only the last name has changed):
+
+```{r rename-2, exercise = TRUE, exercise.setup = "setup7"}
+names(respfall) = c("Sample", "Date"  , "Resp" ,  "Season")
+names(respfall)
+```
+
+###
+
+If you want to change just one name without having to write all the column names out, you can use the *extract* function.  In R, brackets (`[`) represent the extract function.  We will not be using these much today, but if you start coding in R regularly you will likely start using these more at some point.  You can get to the documentation using `?"["`.
+
+We want to *extract* just the fourth variable name in `respfall`.
+
+```{r setup8, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+names(respfall) = c("Sample", "Date"  , "Resp" ,  "Season")
+```
+
+```{r extract2, exercise = TRUE, exercise.setup = "setup8"}
+names(respfall)[4]  # extract the 4th column name only
+```
+
+To change only the fourth column name, we can extract it and assign a new name, effectively replacing only the fourth column name with a new one.
+
+```{r extract3, exercise = TRUE, exercise.setup = "setup8"}
+names(respfall)[4] = "season" # replace the 4th name
+names(respfall)
+```
+
+###
+
+Let's finally stack the two respiration datasets together with `rbind()`.  We'll name our new dataset `respall`.  Here I list `respspring` first within the function, but it really doesn't matter which comes first.
+
+```{r rbindall, eval = FALSE}
+respall = rbind(respspring, respfall)
+```
+
+Take a look at this dataset using `summary()` in the code box below.
+
+```{r setup9, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+respall = rbind(respspring, respfall)
+```
+
+```{r sumall, exercise = TRUE, exercise.setup = "setup8"}
+
+```
+
+```{r sumall-solution}
+summary(respall)
+```
+
+## Joining two datasets
+
+Now we have all of our respiration information in `respall` and all of our temperature information in `temperature`.  We'll want these in one dataset for analysis, so we'll need to merge these two datasets together.  The *unique identifier* for each sample taken is called `Sample`, and is part of both datasets.  The unique identifier is how we can match the rows in one dataset to the rows in the other dataset during the joining process.
+
+Check your `Environment` pane, though.  You can see the `temperature` dataset has one less row than `respall` (60 vs 59).
+
+```{r envboth, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/environment_both.PNG")
+```
+
+Which `Sample` is missing from `temperature`?  Let's check.
+
+###
+
+### Finding values in one dataset that are not in another 
+
+If I were working in Excel, I might order the dataset by `Sample` and then scan through until I found a missing value.  This isn't very efficient, though, particularly in R.  A better way would be to use the handy function `%in%`, which involves *matching*.  However, the easiest way to do this I've found is to use the `anti_join()` function from package **dplyr**.
+
+If you haven't used package **dplyr** before you may need to install it.  You saw how to install packages [earlier in this workshop](#installing-an-add-on-package) using drop down menus or `install.packages("dplyr")`.  Once it is installed, load the package into R via the `library()` function
+
+```{r loaddplyr, message = FALSE, warning = FALSE}
+library(dplyr)
+```
+
+###
+
+Now that **dplyr** is loaded we can use its functions.  If you go to the documentation for `?anti_join` and scroll down you can see the an anti join will:
+
+> return all rows from x where there are not matching values in y, keeping just columns from x.
+
+In other words, the `anti_join()` returns rows from the first dataset ("x") listed that are **NOT** in the second dataset listed ("y").  We want to see which value of `Sample` is in the `respall` dataset that is NOT in the `temperature` dataset.  This means `respall` will be our "x" dataset in `anti_join()`.  
+
+###
+
+We'll use the `by` argument to define which variable in the two datasets we want to match on.  Since `Sample` uniquely identifies where each sample came from, this is our `by` variable.
+
+```{r anti2, exercise = TRUE, exercise.setup = "setup8"}
+anti_join(x = respall, y = temperature, by = "Sample")
+```
+
+In the output you can see that the `temperature` dataset is missing sample 21.  If we didn't know this already we would probably spend some time investigating why there was no temperature value taken for that sample.
+
+### Joining with an inner join
+
+We can join all the temperature and respiration information into a single dataset using some of the other `join` functions from package **dplyr**.
+
+Per the documentation, an *inner join* will:
+
+> return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
+
+This tells us that we will end up with only the samples that are in both datasets after joining.  
+
+###
+
+Let's see what that looks like, using the respiration dataset as the "x" dataset and the temperature dataset as the "y" dataset.  We'll join on `Sample` like we did above with the anti join.  
+
+I name the new object `resptemp`.
+
+```{r join2}
+resptemp = inner_join(x = respall, y = temperature, by = "Sample")
+```
+
+Take a look at the first few lines and structure of this joined dataset in the code box below.
+
+```{r setup10, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+respall = rbind(respspring, respfall)
+resptemp = inner_join(respall, temperature, by = "Sample")
+temp2 = temperature
+```
+
+```{r join2-2, exercise = TRUE, exercise.setup = "setup10"}
+
+```
+
+```{r join2-2-solution}
+head(resptemp)
+str(resptemp)
+```
+
+###
+
+The above works if the names in the two datasets are the same.  What if they are different?  To demonstrate this, let's make a new temperature dataset called `temp2`, and change the name of `Sample` to `Samplenum`.  Note that `Sample` is the first column in the dataset.
+
+This is good practice on using the extract brackets and assigning new names.
+
+Here is the code for assigning a different name to the existing `temperature` dataset.
+
+```{r join3}
+temp2 = temperature
+```
+
+Now you can practice changing the first column name to `Samplenum`.  
+
+*Hint: You learned how to do this in the [last section](#stacking-two-datasets) when we were stacking the two respiration datasets.*
+
+```{r join3-2, exercise = TRUE, exercise.setup = "setup10"}
+
+```
+
+```{r join3-2-solution}
+names(temp2)[1] = "Samplenum"
+names(temp2)
+```
+
+###
+
+To join datasets when the matching variable has different names in the two different datasets, we must list both names in `by`.  The first listed is for the "x" dataset and the second is for the "y" dataset.  You can see what the code looks like below.  
+
+You can see the name of the column in the joined dataset comes from the "x" dataset.
+
+```{r setup11, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+respall = rbind(respspring, respfall)
+resptemp = inner_join(respall, temperature, by = "Sample")
+temp2 = temperature
+names(temp2)[1] = "Samplenum"
+```
+
+```{r join4, exercise = TRUE, exercise.setup = "setup11"}
+inner_join(x = respall, y = temp2, by = c("Sample" = "Samplenum") ) 
+```
+
+###
+
+Getting back to our joined dataset, did you notice there are only 59 rows in the joined dataset `resptemp` we made above?  
+
+```{r join5, exercise = TRUE, exercise.setup = "setup11"}
+nrow(resptemp)
+```
+
+This is because an inner join drops any rows with samples that aren't in both datasets.  Since we are missing sample 21 in the temperature dataset, R dropped this row from the joined dataset.
+
+We can use a different kind of join to keep rows that are missing from one or both datasets.  In this case, let's use `left_join()`.
+
+###
+
+From the documentation, a left join will:
+
+> return all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.
+
+In this case we keep all rows of the *left* (i.e, "x") dataset regardless if there is a match in the second dataset.  Since `respall` is the dataset with all 60 rows, I list it first.
+
+You can see that the new object `resptemp`, made with a left join, has 60 rows instead of 59.
+
+```{r join6, exercise = TRUE, exercise.setup = "setup11"}
+resptemp = left_join(x = respall, y = temperature, by = "Sample")
+nrow(resptemp)
+```
+
+If we look at the first 10 rows of the dataset you can see that the temperature data for sample 21 are all filled with `NA`.  Note the use of the `n` argument in `head()`.
+
+```{r setup12, echo = FALSE}
+temperature = t2
+respspring = s1
+respfall = f1
+respspring$Date = as.Date(respspring$Date, format = "%m/%d/%Y")
+respspring$season = "spring"
+respfall$Date = as.Date(respfall$Date, format = "%Y-%m-%d")
+respfall$season = "fall"
+respall = rbind(respspring, respfall)
+temp2 = temperature
+names(temp2)[1] = "Samplenum"
+resptemp = left_join(x = respall, y = temperature, by = "Sample")
+```
+
+```{r head10, exercise = TRUE, exercise.setup = "setup12"}
+head(resptemp, n = 10)
+```
+
+###
+
+We now have a single dataset that contains both the respiration and temperature data, which I think is a good place to end this tutorial.  In the third tutorial we will spend a little more time learning about working with variables in R based on the combined dataset.  In particular I will focus on working with factors and missing values in R.

@@ -38,17 +38,15 @@ The last tutorial introduces some basic graphical data exploration using **ggplo
 
 ### Before you begin
 
-As of mid-April 2020, the current R version is 3.6.3 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download).  
+As of April 24, 2020, the current R version is 4.0.0 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer if you haven't already.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download). 
 
-Note that R 4.0.0 will be released by the end of April.
-
-The other workshop materials available that you will need if you decide to run through the workshop on your computer and not just in this tutorial are the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  
+If you decide to run through the workshop on your computer and not just in this tutorial you will need the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  
 
 ## Getting started with RStudio
 
 This tutorial assumes you will be working with R through RStudio.  If working along on your own computer, make sure you have RStudio open and ready to go.  If you already have a basic familiarity with RStudio, you might want to skip to the R Help section of this tutorial.  
 
-The very first time you open RStudio you will see three of the four RStudio "panes".  The panes are different sections that make up the main RStudio window.  You can see the `Console` pane on the left, the `Environment` pane on the upper right, and the `Files` pane (along with `Plots`, `Pacakges` and `Help`) on the lower right.
+The very first time you open RStudio you will see three of the four RStudio "panes".  The panes are different sections that make up the main RStudio window.  You can see the `Console` pane on the left, the `Environment` pane on the upper right, and the `Files` pane (along with `Plots`, `Packages` and `Help`) on the lower right.
 
 ```{r rst1, echo = FALSE, out.width = "100%", dpi = 600}
 knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/rstudio_threepanes.PNG", dpi = 600)
