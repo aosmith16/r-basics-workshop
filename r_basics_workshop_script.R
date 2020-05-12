@@ -493,13 +493,19 @@ head(resptemp, n = 10)
 # Let's take a look at it
 resptemp$season
 
-# We can tell it's not a factor because there is no "levels" information
-	# when we look at the structure  or print the column in the console
-# If we check the Environment pane we see it is a character variable ("chr")
+# We can tell it's not a factor 
+	# when we look at the structure in the Environment pane 
+     # and see it is a character variable ("chr")
+
+# A factor is a special kind of categorical variable in R.  
+     # It's a categorical variable where the different categories
+     # are set as *levels* with a particular order  
 
 # The factor() function can be used to force a variable to be a factor;
 	# this is especially useful if you've stored categorical variables
-	# as integers (e.g., 1, 2, 3) instead of characters
+	# as integers (e.g., 1, 2, 3)
+# It's also useful to make sure character variables are factors
+     # prior to using them in an analysis
 factor(resptemp$season)
 
 # We just printed "season" as a factor in the console
@@ -569,12 +575,12 @@ resptemp$season = factor(resptemp$season, levels = c("spring", "fall"),
 # There are several functions available to help with this,
 	# and I will show you one option here - transform()
 
-# In transform(), we can refer to variables in the dataset directly
+# In mutate() from dplyr, we can refer to variables in the dataset directly
 	# after defining which dataset we're working with
 # New variables names are also assigned inside the function, and
 	# we simply assign a name to the new transformed dataset
 	# (in this case, I just give the dataset the same name, "resptemp")
-resptemp = transform(resptemp, tempf = 32 + ( (9/5)*Temp) )
+resptemp = mutate(resptemp, tempf = 32 + ( (9/5)*Temp) )
 
 head(resptemp)
 
@@ -599,7 +605,7 @@ head(resptemp)
 
 # The actual work is done inside transform() again
 	# to create our new variable "tempgroup"
-resptemp = transform(resptemp, tempgroup = ifelse(Temp < 8, "Cold", "Hot") )
+resptemp = mutate(resptemp, tempgroup = ifelse(Temp < 8, yes = "Cold", no = "Hot") )
 resptemp$tempgroup
 
 # Missing values ----
@@ -696,9 +702,18 @@ library(ggplot2)
 qplot(x = tempgroup, y = Resp, data = resptemp)
 
 # If we don't want that NA value, we could
-	# remove any missing values in tempgroup with is.na() and not (!)
-# This means we only want the values of tempgroup that are NOT NA
-     # with the subset(0 function
+	# remove any missing values with the subset() function
+     # and the is.na() function
+
+# The subset function works with conditions like ifelse()
+     # in order to keep just some rows
+# Here's what the code looks like to keep just the "Cold" tempgroup
+subset(resptemp, tempgroup == "Cold")
+
+# To remove the missing values from tempgroup we can
+     # use is.na() with ! (the not operator) to only keep
+     # rows were tempgroup is NOT NA
+# I pass this directly to the data argument
 qplot(x = tempgroup, y = Resp, 
       data = subset(resptemp, !is.na(tempgroup) ) )
 
@@ -758,6 +773,12 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 # The take home message is the being able to control a factor can
 	# control the output you get in R
 
+# A violin plot is a density-boxplot combo
+     # It can be useful for seeing bimodal distributions
+     # that are hidden by boxplots.
+
+qplot(x = tempgroup, y = Resp, data = resptemp2,
+      geom = "violin")
 
 # Analysis using two sample test (finally) ----
 

@@ -1,5 +1,5 @@
 ---
-title: "Getting started in R"
+title: "Reading data files into R"
 output: 
   learnr::tutorial:
        progressive: TRUE
@@ -7,7 +7,7 @@ output:
        ace_theme: "crimson_editor"
        df_print: "default"
 runtime: shiny_prerendered
-description: "This tutorial covers some basic information for folks just starting using R via RStudio.  Finding help and the working directory feature prominantly."
+description: "This tutorial focuses on reading different types of data files into R and how to check data structure.  Datasets are then combined into one."
 ---
 
 ```{r setup, include = FALSE}

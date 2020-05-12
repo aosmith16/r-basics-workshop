@@ -1,0 +1,427 @@
+---
+title: "Factors and missing values"
+output: 
+  learnr::tutorial:
+       progressive: TRUE
+       allow_skip: TRUE
+       ace_theme: "crimson_editor"
+       df_print: "default"
+runtime: shiny_prerendered
+description: "Part 3 of the workshop focuses on working with factors, creating new variables, and working with missing values."
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+# In case working on their own computer and need to install packages
+if(!require("dplyr")){
+    install.packages("dplyr", repos = "http://cran.us.r-project.org")
+    library("dplyr")
+}
+knitr::opts_chunk$set(error = TRUE, tidy = FALSE)
+resptemp = structure(list(Sample = c(26, 23, 25, 27, 24, 19, 20, 22, 18, 
+21, 29, 32, 31, 30, 28, 41, 40, 38, 42, 39, 35, 34, 36, 33, 37, 
+45, 47, 44, 43, 46, 53, 55, 54, 57, 56, 51, 52, 48, 49, 50, 68, 
+71, 70, 72, 69, 67, 63, 66, 65, 64, 61, 59, 62, 60, 58, 75, 76, 
+74, 73, 77), Date = structure(c(6240, 6240, 6240, 6240, 6240, 
+6209, 6209, 6209, 6209, 6209, 6268, 6268, 6268, 6268, 6268, 6329, 
+6329, 6329, 6329, 6329, 6299, 6299, 6299, 6299, 6299, 6360, 6360, 
+6360, 6360, 6360, 6421, 6421, 6421, 6421, 6421, 6390, 6390, 6390, 
+6390, 6390, 6513, 6513, 6513, 6513, 6513, 6482, 6482, 6482, 6482, 
+6482, 6452, 6452, 6452, 6452, 6452, 6543, 6543, 6543, 6543, 6543
+), class = "Date"), Resp = c(0.057, 0.085, 0.159, 0.266, 0.368, 
+0.074, 0.089, 0.117, 0.135, 0.287, 0.063, 0.064, 0.073, 0.074, 
+0.093, 0.092, 0.097, 0.178, 0.267, 0.302, 0.097, 0.105, 0.116, 
+0.176, 0.185, 0.043, 0.122, 0.175, 0.207, 0.523, 0.093, 0.111, 
+0.143, 0.205, 0.224, 0.058, 0.081, 0.089, 0.106, 0.119, 0.05, 
+0.07, 0.08, 0.094, 0.114, 0.063, 0.065, 0.072, 0.086, 0.107, 
+0.08, 0.085, 0.121, 0.207, 0.274, 0.023, 0.052, 0.055, 0.069, 
+0.076), season = c("spring", "spring", "spring", "spring", "spring", 
+"spring", "spring", "spring", "spring", "spring", "spring", "spring", 
+"spring", "spring", "spring", "spring", "spring", "spring", "spring", 
+"spring", "spring", "spring", "spring", "spring", "spring", "spring", 
+"spring", "spring", "spring", "spring", "fall", "fall", "fall", 
+"fall", "fall", "fall", "fall", "fall", "fall", "fall", "fall", 
+"fall", "fall", "fall", "fall", "fall", "fall", "fall", "fall", 
+"fall", "fall", "fall", "fall", "fall", "fall", "fall", "fall", 
+"fall", "fall", "fall"), Tech = c("Mark", "Fatima", "Fatima", 
+"Raisa", "Cita", "Nitnoy", "Raisa", "Nitnoy", "Mark", NA, "Raisa", 
+"Raisa", "Stephano", "Stephano", "Cita", "Raisa", "Raisa", "Nitnoy", 
+"Nitnoy", "Fatima", "Stephano", "LaVerna", "Raisa", "Nitnoy", 
+"Cita", "Stephano", "Cita", "Stephano", "Mark", "Raisa", "Nitnoy", 
+"Stephano", "Stephano", "Nitnoy", "Fatima", "Stephano", "Raisa", 
+"Mark", "Raisa", "Mark", "Raisa", "Raisa", "Fatima", "Mark", 
+"Mark", "Cita", "Raisa", "Mark", "Fatima", "LaVerna", "Raisa", 
+"Cita", "Mark", "Fatima", "Nitnoy", "Raisa", "Raisa", "Raisa", 
+"LaVerna", "Nitnoy"), Temp = c(5.5, 5.5, 5.5, 5.5, 5.5, 4.5, 
+4.5, 4.5, 4.5, NA, 5, 5, 5, 5, 5, 14.5, 14.5, 14.5, 14.5, 14.5, 
+8, 8, 8, 8, 8, 10.5, 10.5, 10.5, 10.5, 10.5, 14, 14, 14, 14, 
+14, 13, 13, 13, 13, 13, 11.5, 11.5, 11.5, 11.5, 11.5, 16, 16, 
+16, 16, 16, 19, 19, 19, 19, 19, 7, 7, 7, 7, 7), DryWt = c(0.64, 
+NA, 0.61, 0.62, 0.565, 0.607, 0.597, 0.603, 0.569, NA, 0.634, 
+0.626, 0.611, 0.613, 0.622, 0.694, 0.749, 0.739, 0.709, 0.732, 
+0.627, 0.642, 0.574, 0.528, 0.619, 0.728, 0.679, 0.62, 0.65, 
+0.67, 0.765, 0.804, 0.768, 0.709, 0.791, 0.785, 0.795, 0.787, 
+0.793, 0.727, 0.77, 0.753, 0.786, 0.759, 0.781, 0.836, 0.848, 
+0.859, 0.82, 0.844, 0.83, 0.808, 0.828, 0.779, 0.801, 0.701, 
+0.685, 0.656, 0.695, 0.661)), row.names = c(NA, -60L), class = "data.frame")
+```
+
+## Introduction
+
+```{r hex, echo = FALSE, out.width = "100px"}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/Rlogo.png")
+```
+
+This tutorial is the third in a series of four introducing you to the basics of R by working through a practical example.  In the last tutorial we combined three datasets into one.  This tutorial continues working with that combined dataset.  The focus is on learning to work with *factors* in R, adding new variables to an existing dataset, and working with missing values in R.  
+
+If you are doing the tutorials in order, the next few sections repeat information you already know.  Skip down to the [next section](#working-with-factors) to start on new material.
+
+###
+
+###
+
+The scientific goal these tutorials are built around is to perform an analysis of some collected data.  Along the way you will learn how to work with data in R and see some common issues that can come up.  
+
+The four tutorials are designed to be done in order, but this is not strictly necessary.  Here are the topics covered in the entire workshop series:
+
+- **Tutorial 1: Getting started with R/RStudio**  
+After a brief introduction to RStudio, this tutorial focuses on the help documentation available in R and elsewhere and the working directory.  
+- **Tutorial 2: Reading data into R**   
+You will learn to read three different types of datasets into R and then work on combining them.  You will also learn about installing add-on packages for the first time.
+- **Tutorial 3: Factors and missing values**  
+Learn about factors in R and how R deals with missing values.  This tutorial also talks about making new variables and saving a dataset as a CSV.
+- **Tutorial 4: Graphical data exploration and analysis**  
+The last tutorial introduces some basic graphical data exploration using **ggplot2** prior to analysis and, finally, the two-sample analysis.
+
+### Before you begin
+
+As of April 24, 2020, the current R version is 4.0.0 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer if you haven't already.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download).  
+
+If you decide to run through the entire workshop on your computer and not just in this tutorial you will need the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  For tutorial 3 you will also need a current version of package **dplyr** installed on your computer.  If you don't have this yet, close the tutorial file, install **dplyr** and then start again.
+
+## Working with factors
+
+A *factor* is a special kind of categorical variable in R.  It is also called an *enumerated type*.  Essentially it's a categorical variable where the different categories are set as *levels* with a particular order.  Factors are crucial in R when doing analyses such as ANOVA.  They also are important in plotting to control the order of categorical axes.
+
+We are going to be working with `resptemp` dataset that we created at the end of tutorial 2.  You may want to remind yourself what this looks like by exploring the `head()` and `str()` of that dataset.  Note in particular that all categorical variables are *characters*.  This how R stores categorical variables by default starting in R 4.0.0.
+
+```{r resptemp, exercise = TRUE}
+
+```
+
+```{r resptemp-solution, echo = FALSE}
+head(resptemp)
+str(resptemp)
+```
+
+### 
+
+### The factor() function
+
+We can turn variables into a factor with the `factor()` function.  This is particularly useful when you have stored a categorical variable as an integer (e.g., 1, 2, 3) and R doesn't know you meant it to be a categorical variable.  It is also useful for character variables where you wan to explicitly see and set the category order.
+
+We will be working with the `season` variable today.  First print the variable to see what it looks like prior to converting it to a factor.
+
+```{r factor1, exercise = TRUE}
+resptemp$season
+```
+
+###
+
+Now let's convert the same variable to a factor with `factor()`.  When the variable is printed you will see it has *levels* information.  These levels tell you what categories you have and the order those categories are in.  The order of the levels indicates the order of the categories.  Here you can see `fall` comes first.   
+
+```{r factor2, exercise = TRUE}
+factor(resptemp$season)
+```
+
+###
+
+In the last step you used you used `factor()` on a variable for the first time.  Running that code printed the new factor variable as output.  But has the original dataset changed?
+
+Check the structure of the dataset to see.
+
+```{r checkfactor, exercise = TRUE}
+
+```
+
+```{r checkfactor-solution, echo = FALSE}
+str(resptemp)
+```
+
+Using `factor()` doesn't change anything in the dataset because we didn't assign it a name.  This is often something that trips up new R users.  It feels like using `factor()` on a variable without assigning a name should change the dataset, but it doesn't.
+
+###
+
+Let's give the new variable the same name, `season`.  The new factor variable will replace the original character variable in the dataset. This uses dollar sign notation that you learned in tutorial 2.
+
+```{r factor3, exercise = TRUE}
+resptemp$season = factor(resptemp$season)
+```
+
+```{r setup1, echo = FALSE}
+resptemp$season = factor(resptemp$season)
+```
+
+Now look at the dataset structure to note any changes.  You can also print `resptemp$season` if you'd like to see what it looks like now.
+
+```{r checkfactor2, exercise = TRUE, exercise.setup = "setup1"}
+
+```
+
+```{r checkfactor2-setup, echo = FALSE}
+str(resptemp)
+resptemp$season
+```
+
+### Factor levels
+
+Let's talk more about the *levels* of a factor.  The order of the levels can be important, and changing the order can, for example, change what a graph you are making looks like.
+
+By default, R sets the factor levels *alphanumerically*.  This means numbers come before letters and "A" comes before "B".  This is why `fall` is the first level when we converted `season` to a factor; `f` comes before `s` in the alphabet.
+
+We can change the order of the levels with the `levels` argument of `factor()`.  You can see the description of this argument in the help page, `?factor`.
+
+> an optional vector of the unique values (as character strings) that x might have taken. The default is the unique set of values taken by as.character(x), sorted into increasing order of x. Note that this set can be specified as smaller than sort(unique(x)).  
+
+###
+
+That description is a little hard to follow for me, so let's see an example of how it works.  
+
+To set the order of the levels, we list all the categories present in the variable in the order we want them.  This is done as a vector of strings (i.e., in quotes), which we pass to the `levels` argument.   
+
+```{r factor4, exercise = TRUE, exercise.setup = "setup1"}
+factor(resptemp$season, levels = c("spring", "fall") )
+```
+
+Note the order of the variable itself hasn't changed, but the order of the *levels* has.
+
+###
+
+Typos matter here, so be careful.  
+
+Look what happens if we don't write the categories in the `levels` argument exactly as they appear in the dataset.  I put a capital "S" on "spring" in the code below.  
+
+```{r factor5, exercise = TRUE, exercise.setup = "setup1"}
+factor(resptemp$season, levels = c("Spring", "fall") )
+```
+
+Since lower-case `spring` is not one of the levels I defined, all entries that have that as a value are turned into `NA`.
+
+It's definitely important to check what's happening as you go along to avoid these sorts of mistakes!
+
+### Changing the labels
+
+If we want to make the names of the categories look nicer, which we might do for graphing, we can change them with the `labels` argument.
+
+From the help page, the `labels` are:
+
+> either an optional character vector of labels for the levels (in the same order as levels after removing those in exclude), or a character string of length 1. Duplicated values in labels can be used to map different values of x to the same factor level.
+
+We'll be changing all the labels, so we make a vector of strings that is the same length as the `levels`.  Here you can see I change the labels so the first letter is capitalized.
+
+```{r factor6, exercise = TRUE, exercise.setup = "setup1"}
+factor(resptemp$season,
+       levels = c("spring", "fall"),
+       labels = c("Spring", "Fall") )
+```
+
+The level order is set with `levels` and the new `labels` are applied to the dataset.  This changes the values of the variable.
+
+###
+
+The order of the categories in `labels` must be the same as in `levels`.  Otherwise you will make a mistake that will drastically change your dataset and lead to errors in all the rest of your work.  
+
+Look at the results below when I get the order of the `labels` incorrect.  R does what I ask it to do, but now my `spring` and `fall` data are mislabeled.
+
+```{r factor7, exercise = TRUE, exercise.setup = "setup1"}
+factor(resptemp$season, 
+       levels = c("spring", "fall"),
+       labels = c("Fall", "Spring") )
+```
+
+###
+
+As I've been going along demonstrating these different options in `factor()`, I haven't assigned anything we've been doing to a variable name.  
+
+Write code to assign the reordered factor with new, capitalized labels to `season` before moving on.   
+
+```{r factor8, exercise = TRUE, exercise.setup = "setup1"}
+
+```
+
+```{r factor8-solution, echo = FALSE}
+resptemp$season = factor(resptemp$season, 
+                         levels = c("spring", "fall"),
+                         labels = c("Spring", "Fall") )
+```
+
+```{r setup2, echo = FALSE}
+resptemp$season = factor(resptemp$season, 
+                         levels = c("spring", "fall"),
+                         labels = c("Spring", "Fall") )
+```
+
+That's it on factors for now, but we will circle back to this when we making plots in tutorial 4.  Also, while we won't use it here, I find package **forcats** extremely useful when working with factors in R.
+
+## Creating new variables
+
+Next we'll practice creating a new variable in a dataset based on existing variables.  We'll first calculate temperature in degrees Fahrenheit from temperature in degrees Celsius and add it to the `resptemp` dataset with the name `tempf`.
+
+The dollar sign notation can get tedious once you start adding variables to datasets.  R has several built-in functions to help with this while still avoiding the `attach()` function, including `with()` and `transform()`.  The `mutate()` function from **dplyr** is also available for this.  
+
+We will be using `mutate()` today; note **dplyr** must be loaded via `library()` to use `mutate()`.  Since we used this package in tutorial 2 I'm assuming you already have it installed.
+
+```{r dplyr}
+library(dplyr)
+```
+
+###
+
+###
+
+In `mutate()`, the first argument is the dataset we want to add variables to.  We then create one or more new variables, assigning variable names and using existing variables to create the new ones.  We don't need any dollar sign notation, as `mutate()` allows us to both assign new variable names and refer to existing variables that are in the dataset given as the first argument.
+
+When using `mutate()`, I generally name the *mutated* dataset (the one with the new column in it) the same as the original dataset.  While we won't see it today, we can make multiple new variables at once in `mutate` by separating the new variables with commas.
+
+Here's how I can calculate temperature in degrees Fahrenheit from the existing temperature variable `Temp`.
+
+```{r transform, exercise = TRUE, exercise.setup = "setup2"}
+resptemp = mutate(resptemp, tempf = 32 + ( (9/5)*Temp) )
+```
+
+```{r setup3, echo = FALSE}
+resptemp$season = factor(resptemp$season, 
+                         levels = c("spring", "fall"),
+                         labels = c("Spring", "Fall") )
+resptemp = mutate(resptemp, tempf = 32 + ( (9/5)*Temp) )
+```
+
+Take a look at `resptemp` with the new variable in it.
+
+```{r transform2, exercise = TRUE, exercise.setup = "setup3"}
+
+```
+
+```{r transform2-solution, echo = FALSE}
+head(resptemp)
+str(resptemp)
+```
+
+###
+
+If you can remember way back to the beginning of tutorial 2, the research question of interest is about differences in mean respiration between two temperature categories.  Right now we have a quantitative variable for temperature (`Temp`) instead of a categorical one.  
+
+We can create a two-level categorical variable based on `Temp` using the `ifelse()` function.  In our case, if temperature in Celsius is less than 8 degrees the row will be placed in the `Cold` category, otherwise the row will be put in the `Hot` category.
+
+Here's what the top of the help page looks like at `?ifelse`.  You can see the function has only three arguments.
+
+```{r ifelsepic, echo = FALSE}
+knitr::include_graphics("https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/ifelse.png")
+```
+
+###
+
+In `ifelse()`, we list the *condition* we want to test as the first argument.  If the result of the test is `TRUE` for a row in the dataset, the value given to the `yes` argument is assigned to that row.  If the result of the test is `FALSE`, the `no` value is assigned.  
+
+Example code, combined with `mutate()` to add the new variable to the `resptemp` dataset, is below.  The condition I use is that the value of `Temp` is less than 8$^\circ$C.
+
+```{r ifelse2, exercise = TRUE, exercise.setup = "setup3"}
+resptemp = mutate(resptemp, tempgroup = ifelse(Temp < 8, yes = "Cold", no = "Hot") )
+```
+
+```{r setup4, echo = FALSE}
+resptemp$season = factor(resptemp$season, 
+                         levels = c("spring", "fall"),
+                         labels = c("Spring", "Fall") )
+resptemp = mutate(resptemp, tempf = 32 + ( (9/5)*Temp) )
+resptemp = mutate(resptemp, tempgroup = ifelse(Temp < 8, yes = "Cold", no = "Hot") )
+```
+
+Take a look at the new variable, named `tempgroup`.  This is the variable that is of interest for analysis.
+
+```{r ifelse3, exercise = TRUE, exercise.setup = "setup4"}
+
+```
+
+```{r ifelse3-solution, echo = FALSE}
+resptemp$tempgroup
+str(resptemp)
+```
+
+## Working with missing values
+
+If you take a look at the `summary()` of `resptemp`, you will see we have some missing values.  These are represented in R as `NA`.
+
+You should take note of the missing values in the continuous variable `DryWt` and the continuous temperature variables.  Missing values in character variables don't show up.
+
+```{r miss, exercise = TRUE, exercise.setup = "setup4"}
+summary(resptemp)
+```
+
+###
+
+###
+
+R treats missing values differently than other software packages you may have used, so we'll spend a few minutes talking about them.  
+
+Look what happens if we take the mean of the variable `DryWt` with the `mean()` function.  The `DryWt` variable contains two missing values.
+
+```{r miss2, exercise = TRUE, exercise.setup = "setup4"}
+mean(resptemp$DryWt)
+```
+
+A missing value is something that we have no value for.  In R logic, if we try to average something that has no known value with some actual values, the result is impossible to calculate and so R returns `NA`.  When you have missing values in R, you will need to specifically decide what you want to do with them.  R is not going to just ignore them for you.
+
+### The `na.rm` argument
+
+Many functions have the argument `na.rm` for dealing with missing values.  This argument stands for "NA remove", and tells the function to remove any missing values before applying the function.  This is true for `mean()`, which you can see in the help page (`?mean`).
+
+The `na.rm` argument takes:  
+
+> a logical value indicating whether NA values should be stripped before the computation proceeds.
+
+You can set this argument to `TRUE` to strip `NA` prior to calculating the mean, for example.
+
+```{r miss3, exercise = TRUE, exercise.setup = "setup4"}
+mean(resptemp$DryWt, na.rm = TRUE)
+```
+
+While many functions have this argument, plenty don't.  You'll need to check the help page for a function before counting on `na.rm` to work.
+
+### Using `na.omit` to remove all rows with missing values
+
+If we didn't want to keep any rows that had missing values anywhere in our dataset, we could remove them all with `na.omit()`.  
+
+In the code below I make a new dataset called `resptemp2` that contains no missing values.  You can see it has two less rows (58) than `resptemp`, since two rows contained missing values in at least some of the variables.
+
+```{r miss4, exercise = TRUE, exercise.setup = "setup4"}
+resptemp2 = na.omit(resptemp)
+
+nrow(resptemp2)
+```
+
+### Other functions for working with `NA`
+
+There are other functions to use when working with missing values, including `is.na()` and `complete.cases()`.  You should check out the help pages for those if you are interested.  We'll see an example of using `is.na()` in tutorial 4, but not in any great detail.
+
+## Saving a dataset
+
+In tutorials 2 and 3 we went to the trouble of making a single dataset from the three original datasets and creating a new variable we'll need for analysis.  Right now, this dataset only exists within our current R session.  While we could always recreate it because we have all of our R code written in a saved script, sometimes it's worth saving a dataset after you've cleaned it up.  
+
+For example I might save the combined dataset as a comma-delimited file called `combined_resp_and_temp_data.csv` using the `write.csv()` function.  If you wanted to save the file somewhere other than our working directory you'd need to write out the path to that directory.  
+
+I always set the `row.names` argument to `FALSE` so the row names that R makes won't be written into the file.  You can see this argument in the documentation, `?write.csv`.
+
+I demonstrate how to write code to save the dataset into my current working directory as a CSV file but do not have you run it in this tutorial.
+
+```{r write, eval = FALSE}
+write.csv(x = resptemp, 
+          file = "combined_resp_and_temp_data.csv",
+          row.names = FALSE)
+```
+
+###
+
+###
+
+This ends tutorial 3.  We now have a dataset that we can use for an analysis to help address the research question.  In tutorial 4 we will spend time exploring the data graphically.  This is standard practice for any analysis you do, and learning how to make basic exploratory graphics in R is an important skill to have.  At the end of tutorial 4 you will (finally!) do a basic two-sample analysis and finish up the workshop material.

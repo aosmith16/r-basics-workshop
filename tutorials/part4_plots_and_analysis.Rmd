@@ -1,0 +1,341 @@
+---
+title: "Exploratory plots and analysis"
+output: 
+  learnr::tutorial:
+       progressive: TRUE
+       allow_skip: TRUE
+       ace_theme: "crimson_editor"
+       df_print: "default"
+runtime: shiny_prerendered
+description: "Part 4 of the workshop focuses on exploratory plots of the data prior to analysis and then performing basic two-sample analyses."
+---
+
+```{r setup, include = FALSE}
+library(learnr)
+# In case working on their own computer and need to install packages
+if(!require("ggplot2")){
+    install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+    library("ggplot2")
+}if(!require("dplyr")){
+    install.packages("dplyr", repos = "http://cran.us.r-project.org")
+    library("dplyr")
+}
+knitr::opts_chunk$set(error = TRUE, tidy = FALSE)
+resptemp = structure(list(Sample = c(26, 23, 25, 27, 24, 19, 20, 22, 18, 
+21, 29, 32, 31, 30, 28, 41, 40, 38, 42, 39, 35, 34, 36, 33, 37, 
+45, 47, 44, 43, 46, 53, 55, 54, 57, 56, 51, 52, 48, 49, 50, 68, 
+71, 70, 72, 69, 67, 63, 66, 65, 64, 61, 59, 62, 60, 58, 75, 76, 
+74, 73, 77), Date = structure(c(6240, 6240, 6240, 6240, 6240, 
+6209, 6209, 6209, 6209, 6209, 6268, 6268, 6268, 6268, 6268, 6329, 
+6329, 6329, 6329, 6329, 6299, 6299, 6299, 6299, 6299, 6360, 6360, 
+6360, 6360, 6360, 6421, 6421, 6421, 6421, 6421, 6390, 6390, 6390, 
+6390, 6390, 6513, 6513, 6513, 6513, 6513, 6482, 6482, 6482, 6482, 
+6482, 6452, 6452, 6452, 6452, 6452, 6543, 6543, 6543, 6543, 6543
+), class = "Date"), Resp = c(0.057, 0.085, 0.159, 0.266, 0.368, 
+0.074, 0.089, 0.117, 0.135, 0.287, 0.063, 0.064, 0.073, 0.074, 
+0.093, 0.092, 0.097, 0.178, 0.267, 0.302, 0.097, 0.105, 0.116, 
+0.176, 0.185, 0.043, 0.122, 0.175, 0.207, 0.523, 0.093, 0.111, 
+0.143, 0.205, 0.224, 0.058, 0.081, 0.089, 0.106, 0.119, 0.05, 
+0.07, 0.08, 0.094, 0.114, 0.063, 0.065, 0.072, 0.086, 0.107, 
+0.08, 0.085, 0.121, 0.207, 0.274, 0.023, 0.052, 0.055, 0.069, 
+0.076), season = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L), .Label = c("Spring", "Fall"), class = "factor"), 
+    Tech = c("Mark", "Fatima", "Fatima", "Raisa", "Cita", "Nitnoy", 
+    "Raisa", "Nitnoy", "Mark", NA, "Raisa", "Raisa", "Stephano", 
+    "Stephano", "Cita", "Raisa", "Raisa", "Nitnoy", "Nitnoy", 
+    "Fatima", "Stephano", "LaVerna", "Raisa", "Nitnoy", "Cita", 
+    "Stephano", "Cita", "Stephano", "Mark", "Raisa", "Nitnoy", 
+    "Stephano", "Stephano", "Nitnoy", "Fatima", "Stephano", "Raisa", 
+    "Mark", "Raisa", "Mark", "Raisa", "Raisa", "Fatima", "Mark", 
+    "Mark", "Cita", "Raisa", "Mark", "Fatima", "LaVerna", "Raisa", 
+    "Cita", "Mark", "Fatima", "Nitnoy", "Raisa", "Raisa", "Raisa", 
+    "LaVerna", "Nitnoy"), Temp = c(5.5, 5.5, 5.5, 5.5, 5.5, 4.5, 
+    4.5, 4.5, 4.5, NA, 5, 5, 5, 5, 5, 14.5, 14.5, 14.5, 14.5, 
+    14.5, 8, 8, 8, 8, 8, 10.5, 10.5, 10.5, 10.5, 10.5, 14, 14, 
+    14, 14, 14, 13, 13, 13, 13, 13, 11.5, 11.5, 11.5, 11.5, 11.5, 
+    16, 16, 16, 16, 16, 19, 19, 19, 19, 19, 7, 7, 7, 7, 7), DryWt = c(0.64, 
+    NA, 0.61, 0.62, 0.565, 0.607, 0.597, 0.603, 0.569, NA, 0.634, 
+    0.626, 0.611, 0.613, 0.622, 0.694, 0.749, 0.739, 0.709, 0.732, 
+    0.627, 0.642, 0.574, 0.528, 0.619, 0.728, 0.679, 0.62, 0.65, 
+    0.67, 0.765, 0.804, 0.768, 0.709, 0.791, 0.785, 0.795, 0.787, 
+    0.793, 0.727, 0.77, 0.753, 0.786, 0.759, 0.781, 0.836, 0.848, 
+    0.859, 0.82, 0.844, 0.83, 0.808, 0.828, 0.779, 0.801, 0.701, 
+    0.685, 0.656, 0.695, 0.661), tempf = c(41.9, 41.9, 41.9, 
+    41.9, 41.9, 40.1, 40.1, 40.1, 40.1, NA, 41, 41, 41, 41, 41, 
+    58.1, 58.1, 58.1, 58.1, 58.1, 46.4, 46.4, 46.4, 46.4, 46.4, 
+    50.9, 50.9, 50.9, 50.9, 50.9, 57.2, 57.2, 57.2, 57.2, 57.2, 
+    55.4, 55.4, 55.4, 55.4, 55.4, 52.7, 52.7, 52.7, 52.7, 52.7, 
+    60.8, 60.8, 60.8, 60.8, 60.8, 66.2, 66.2, 66.2, 66.2, 66.2, 
+    44.6, 44.6, 44.6, 44.6, 44.6), tempgroup = c("Cold", "Cold", 
+    "Cold", "Cold", "Cold", "Cold", "Cold", "Cold", "Cold", NA, 
+    "Cold", "Cold", "Cold", "Cold", "Cold", "Hot", "Hot", "Hot", 
+    "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", 
+    "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", 
+    "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", 
+    "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", "Hot", 
+    "Hot", "Cold", "Cold", "Cold", "Cold", "Cold")), class = "data.frame", row.names = c(NA, 
+-60L))
+```
+
+## Introduction
+
+```{r hex, echo = FALSE, out.width = "100px"}
+knitr::include_graphics(path = "https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/Rlogo.png")
+```
+
+This tutorial is the final in a series of four introducing you to the basics of R by working through a practical example.  After learning to combine and add variables to datasets, we now have a dataset that's ready for analysis.  This tutorial will focus on making exploratory plots using package **ggplot2** and then, finally, doing a two-sample analysis.    
+
+If you are doing the tutorials in order, the next few sections repeat information you already know.  Skip down to the [next section](#graphical-data-exploration) to start on new material.
+
+###
+
+###
+
+The scientific goal these tutorials are built around is to perform an analysis of some collected data.  Along the way you will learn how to work with data in R and see some common issues that can come up.  
+
+The four tutorials are designed to be done in order, but this is not strictly necessary.  Here are the topics covered in the entire workshop series:
+
+- **Tutorial 1: Getting started with R/RStudio**  
+After a brief introduction to RStudio, this tutorial focuses on the help documentation available in R and elsewhere and the working directory.  
+- **Tutorial 2: Reading data into R**   
+You will learn to read three different types of datasets into R and then work on combining them.  You will also learn about installing add-on packages for the first time.
+- **Tutorial 3: Factors and missing values**  
+Learn about factors in R and how R deals with missing values.  This tutorial also talks about making new variables and saving a dataset as a CSV.
+- **Tutorial 4: Graphical data exploration and analysis**  
+The last tutorial introduces some basic graphical data exploration using **ggplot2** prior to analysis and, finally, the two-sample analysis.
+
+### Before you begin
+
+As of April 24, 2020, the current R version is 4.0.0 and the current RStudio version is 1.2.5042.  You should download current versions of both these programs and install them on your computer if you haven't already.  You can download R from [CRAN](https://cran.r-project.org/) and the free version of RStudio from [their site](https://rstudio.com/products/rstudio/download/#download).  
+
+If you decide to run through the entire workshop on your computer and not just in this tutorial you will need the three data files and the R script (ending in `.R`).  You can download these files from my website here, https://ariel.rbind.io/workshop/rbasics/.  Save these files into a single folder on your computer.  
+
+## Graphical data exploration
+
+Before embarking on an analysis, we'll want to spend time exploring the dataset.  This usually involves calculating interesting data summaries and creating exploratory graphics to understand the dataset.  This gives us a chance to find mistakes and learn what the variables of interest look like as we start thinking about what statistical tool will help us answer our question of interest.  
+
+I will only be focusing on graphical data exploration today.  However, if you use R regularly you will want to learn how to make summaries for groups and other data manipulation tasks.  If you want to learn more about data manipulation in R you can check out, e.g., my data manipulation with **dplyr** workshop materials [here](https://ariel.rbind.io/workshop/datamanip/).
+
+###
+
+### 
+
+The research question we are working on addressing today is about differences in mean respiration for "Hot" vs "Cold" sites.  The dataset `resptemp` contains information about respiration in the variable `Resp` and the temperature groups in the variable `tempgroup`.  
+
+Take a look at the structure and a summary of the dataset in the code window below to reminder yourself what things look like.  Make note of the missing values: two are missing from `DryWt` and one from the temperature variables.
+
+```{r resptemp, exercise = TRUE}
+
+```
+
+```{r resptemp-solution, echo = FALSE}
+str(resptemp)
+summary(resptemp)
+```
+
+### Exploratory graphics
+
+Much of the data exploration I do is with graphics.  Today we'll be using the function `qplot()` from package **ggplot2** to make simple exploratory graphics.  The "q" in `qplot` stands for "quick", so this is the function that we can use to make quick exploratory plots.  
+
+If we wanted to make more polished graphics for publication or presentation, we would want to switch to using the `ggplot()` function.  Making nice graphics with `ggplot()` is a [topic for another workshop](https://ariel.rbind.io/workshop/ggplot2/).
+
+Let's load the **ggplot2** package.  If working on your own computer you may need to install the package if you don't already have it installed already (`install.packages("ggplot2")`).  You learned how to install packages in the second tutorial.
+
+```{r ggplot2, message = FALSE}
+library(ggplot2)
+```
+
+## Scatterplot
+
+We'll start with a scatterplot of `Resp` by `tempgroup`, with `Resp` on the y axis and `tempgroup` on the x axis.  We will use the `data` argument to define the dataset that contains the variables we want to graph.  This makes it so we don't have to (and shouldn't!) use dollar sign notation.  
+
+The scatterplot is the default plot type in `qplot()`.
+
+```{r qplot, exercise = TRUE}
+qplot(x = tempgroup, y = Resp, data = resptemp)
+```
+
+###
+
+### Using `is.na()` to remove missing values
+
+Notice we have a missing value in `tempgroup`, which shows up on the x axis.  You learned how to remove all the rows that contain missing values with `na.omit()` in the third tutorial. That doesn't work here, because that will remove two rows (because of `DryWt`) but there is only 1 row that has a missing value in `tempgroup`.  
+
+We can remove only the missing value in `tempgroup` using the `subset()` function and `is.na()`.  We haven't learned how to `subset()` data, but essentially we can choose only some rows to keep.
+
+For example, if we wanted a dataset containing only the `Cold` group we could use code like below.  We give the dataset to subset from and then a condition indicating which rows we want to keep.  This condition is like what we did with `ifelse()` in the third tutorial.  Here we keep all rows that meet the condition.
+
+```{r subset, exercise = TRUE}
+subset(resptemp, tempgroup == "Cold")
+```
+
+###
+
+I'm not going to go into a ton of detail on this due to time constraints, but we can use `is.na()` as our condition to test if the `tempgroup` value on each row is `NA` or not.  Because we want to remove all the rows where `tempgroup` is **not** `NA`, we use `is.na()` with the not operator (`!`).  If the value is *not* NA, we keep it.  
+
+Passing the `subset()` code to the `data` argument I now plot only the existing temperature groups.  
+
+```{r qplot2, exercise = TRUE}
+qplot(x = tempgroup, y = Resp, 
+      data = subset(resptemp, !is.na(tempgroup) ) )
+```
+
+## Boxplot
+
+We can make a boxplot instead of a scatterplot by using the `geom` argument to define the plot type.  For a boxplot we use `"boxplot"`.
+
+```{r qplot3, exercise = TRUE}
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp, 
+      geom = "boxplot")
+
+```
+
+And, again, we might want to take out that missing value in `tempgroup`.
+
+```{r qplot4, exercise = TRUE}
+qplot(x = tempgroup, y = Resp, 
+      data = subset(resptemp, !is.na(tempgroup) ), 
+	 geom = "boxplot")
+```
+
+###
+
+###
+
+At this point I decided to make a new dataset without that missing `tempgroup` value.  We won't be using that value in any analyses today, and it was a nuisance to have to remove it for each plot.  I name the new dataset `resptemp2`.  This dataset has only 59 rows since one row is removed.
+
+```{r nona, exercise = TRUE}
+resptemp2 = subset(resptemp, !is.na(tempgroup) )
+nrow(resptemp2)
+```
+
+```{r setup1, echo = FALSE}
+resptemp2 = subset(resptemp, !is.na(tempgroup) )
+```
+
+## Histogram
+
+Some people like histograms to check their dataset for skew and symmetry.  
+
+Here we make two histograms, one for each temperature group, by setting the `fill` color of the histograms by `tempgroup`.  This will also add a legend to the plot.  Notice the variable of interest in a histogram (`Resp` in our case) is on the x axis.  This is because histograms show the frequency distribution, which `qplot()` calculates for us.
+
+```{r qplot6, exercise = TRUE, exercise.setup = "setup1"}
+qplot(x = Resp, fill = tempgroup, 
+      data = resptemp2, 
+	 geom = "histogram")
+```
+
+###
+
+You can see that `fill` changes the color of the inside of the boxes in a histogram.  Take a look at what `color` does by copying the code above and replacing `fill` with `color`.
+
+```{r qplot6-2, exercise = TRUE, exercise.setup = "setup1"}
+
+```
+
+## Density plot
+
+The next example of plotting I give is primarily to show you how changing a factor can change your graphical output.  Let's make a density plot for each group, which is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again.  
+
+You can see I also add `alpha`, which makes the colors more transparent because I show a value less than 1.  To see what it looks like without transparency you can delete that part of the code and run the plot again.
+
+```{r qplot7, exercise = TRUE, exercise.setup = "setup1"}
+qplot(x = Resp, fill = tempgroup, data = resptemp2,
+	 geom = "density", alpha = I(.5) )
+```
+
+###
+
+The order of factor levels affects the plot.  In the last few plots you saw that `Cold` came before `Hot` in the legend.  That's because `qplot()` uses the default factor level order and `C` comes before `H`.  We can change the order by changing the levels of the factor `tempgroup`.
+
+You learned how to do this is the third tutorial.  
+
+```{r factoragain, exercise = TRUE}
+resptemp2$tempgroup = factor(resptemp2$tempgroup, levels = c("Hot", "Cold") )
+resptempt2
+```
+
+```{r setup1, echo = FALSE}
+resptemp2 = subset(resptemp, !is.na(tempgroup) )
+resptemp2$tempgroup = factor(resptemp2$tempgroup, levels = c("Hot", "Cold") )
+```
+
+###
+
+Look at how both the plot and the legend changed because we changed the order level of the factor variable.
+
+```{r qplot8, exercise = TRUE, exercise.setup = "setup2"}
+qplot(x = Resp, fill = tempgroup, data = resptemp2,
+	 geom = "density", alpha = I(.5) )
+```
+
+###
+
+Now that the levels of `tempgroup` are in a different order, go back and remake the scatterplot so you can see how the plot changes when the factor levels change.
+
+```{r scatter2, exercise = TRUE, exercise.setup = "setup2"}
+
+```
+
+```{r scatter2-solution, echo = FALSE}
+qplot(x = tempgroup, y = Resp, data = resptemp2)
+```
+
+## Violin plot
+
+A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide bimodal distributions, which could be seen in a violin plot.  
+
+To make a violin plot we use `geom = "violin"` and define the x axis with the categorical variable and the y axis with the continuous variable of interest much like a boxplot.
+
+You might want to play around with adding colors or fills for the violin plot.
+
+```{r qplot9, exercise = TRUE, exercise.setup = "setup2"}
+qplot(x = tempgroup, y = Resp, data = resptemp2,
+      geom = "violin")
+```
+
+## Analysis using a two-sample test
+
+Let's compare the respiration rate between temperature groups with a two-sample test.  Each of us would have to decide if the assumptions are reasonable for a two-sample t-test, a Welch two-sample t-test if the variances are unequal, or possibly a Wilcoxon rank-sum test if there is extreme skew.  In R, there is a built-in function `t.test()` for doing t-tests and `wilcox.test()` for rank-sum and signed-rank tests.
+
+### T-test
+
+I am writing the code in the formula format, with the response variable listed first and the explanatory variable after the tilde.  I also define the dataset the variables are in with the `data` argument, and so I avoid using dollar sign notation.
+
+```{r t, exericse = TRUE, exercise.setup = "setup2"}
+t.test(Resp ~ tempgroup, data = resptemp2)
+```
+
+You can see in the output that this is a Welch t-test, which doesn't not assume constant variance.  If you go to the help page for `t.test()` (`?t.test`) you will see the `var.equal` argument defaults to `FALSE`.  This argument is:
+
+> a logical variable indicating whether to treat the two variances as being equal. If TRUE then the pooled variance is used to estimate the variance otherwise the Welch (or Satterthwaite) approximation to the degrees of freedom is used.
+
+###
+
+To do a t-test assuming constant variance you would use `var.equal = TRUE`.  Add this to the code above to see how the output changes.
+
+```{r t2, exercise = TRUE, exercise.setup = "setup2"}
+
+```
+
+```{r t2-solution, exercise = TRUE, exercise.setup = "setup2"}
+t.test(Resp ~ tempgroup, data = resptemp2, var.equal = TRUE)
+```
+
+### Wilcoxon rank-sum test
+
+The `wilcox.test()` function works much like `t.test()`, but does the nonparametric Wilcoxon rank-sum test instead of a t-test.  In this case we get a useful warning (which is not an error).  See the `exact` argument in the documentation to learn more about this warning.
+
+```{r wilc, exercise = TRUE}
+wilcox.test(Resp ~ tempgroup, data = resptemp2)
+```
+
+To be clear, you wouldn't do all of these tests.  Instead, you would have chosen one based on how well you'd met any assumptions.  I show all three to give you a couple of additional examples of working with functions in R.
+
+###
+
+With the analysis finished, our R work is done.  In a real analysis, we would spend time making a final graphic or table of results.  That is beyond the scope of this workshop, however, so we'll end here knowing there is more to learn in R but with a good start on the basics.  

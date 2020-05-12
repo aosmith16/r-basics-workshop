@@ -683,15 +683,26 @@ We finally have all our data in a single dataset to work with, which means we've
 
 ## Working with factors in R
 
-Let's spend some time talking more about factors in R.  Knowing how to work with factors in R becomes important when we want to make graphs using categorical variables or we want to fit a linear model with factors (like an ANOVA) and would like to control what the output looks like.
+Let's spend some time talking more about factors in R.  Knowing how to work with factors in R becomes important when we want to, e.g., make graphs using categorical variables or we want to fit a linear model with factors (like an ANOVA) and would like to control what the output looks like.
 
-At the moment, the `season` variable is a *character* variable.  We can see this when we print it in the Console because the categories are not listed as *levels*.  We can also see it if we look at the structure of the dataset in the Environment pane; the variable type is character, `chr`.
+At the moment, the `season` variable is a *character* variable.  We can also this if we look at the structure of the dataset in the Environment pane; the variable type is character, `chr`.  Starting in R 4.0.0, all categorical variables are read as character variables by default.
+
+```{r facstr}
+str(resptemp$season)
+```
+
+
+This is what the variable looks like when we print it in the Console..
 
 ```{r factor1}
 resptemp$season
 ```
 
-We can turn variables into a factor via the `factor()` function.  This is particularly useful when you, say, have stored a categorical variable as an integer (e.g., 1, 2, 3) and R doesn't know you meant it to be a categorical.
+A *factor* is a special kind of categorical variable in R.  It is also called an *enumerated type*.  Essentially it's a categorical variable where the different categories are set as *levels* with a particular order.  Factors are crucial in R when doing analyses such as ANOVA.  They also are needed in plotting to control the order of categorical axes.
+
+We can turn variables into a factor via the `factor()` function.  This is particularly useful when you, say, have stored a categorical variable as an integer (e.g., 1, 2, 3) and R doesn't know you meant it to be a categorical variable.  It is also useful for character variables so you more explicitly understand the order the categories are in.
+
+We'll convert `season` into a factor with `factor()`.  When the variable is printed you will see it now has *levels* information.  These levels tell you what categories you have in the variable.  The order of the levels indicates the order of the categories.  Here you can see `fall` comes first.
 
 ```{r factor2}
 factor(resptemp$season)
@@ -719,9 +730,13 @@ Let's talk more about the levels of a factor.  The order of the levels can be im
 
 ### Setting the order of the categories
 
-By default, R sets the factor levels alphanumerically.  This means numbers come before letters and "A" comes before "B".  We can change the order of the levels with the `levels` argument of `factor()`.  You can see the description of the arguments in the documentation at `?factor`.
+By default, R sets the factor levels *alphanumerically*.  This means numbers come before letters and "A" comes before "B".  This is why `fall` is the first level when we converted `season` to a factor; `f` comes before `s` in the alphabet.
 
-To set the order of the levels, we list all the categories present in the variable in the order we want them in a vector and put it as the `levels` argument.  
+We can change the order of the levels with the `levels` argument of `factor()`.  You can see the description of this argument in the documentation at `?factor`.
+
+> an optional vector of the unique values (as character strings) that x might have taken. The default is the unique set of values taken by as.character(x), sorted into increasing order of x. Note that this set can be specified as smaller than sort(unique(x)).  
+
+That description is a little hard to follow for me, so let's see how it works.  To set the order of the levels, we list all the categories present in the variable in the order we want them in a vector of strings and put it as the `levels` argument.  
 
 ```{r factor4}
 factor(resptemp$season, levels = c("spring", "fall") )
@@ -737,8 +752,14 @@ factor(resptemp$season, levels = c("Spring", "fall") )
 
 If we want to make the names of the categories look nicer for graphing, we can change them with the `labels` argument.
 
+From the help page, the `labels` are:
+> either an optional character vector of labels for the levels (in the same order as levels after removing those in exclude), or a character string of length 1. Duplicated values in labels can be used to map different values of x to the same factor level.
+
+We'll be changing all the labels, so make a vector of strings that is the same length as the `levels`.  Here we change the labels so the first letter is capitalized.
+
 ```{r factor6}
-factor(resptemp$season, levels = c("spring", "fall"), 
+factor(resptemp$season, 
+       levels = c("spring", "fall"), 
 	  labels = c("Spring", "Fall") )
 ```
 
@@ -752,9 +773,12 @@ factor(resptemp$season, levels = c("spring", "fall"),
 As we've been going along practicing with `factor()`, I haven't assigned anything we've been doing to a variable name.  Let's assign the reordered factor to `season` before moving on.
 
 ```{r factor8}
-resptemp$season = factor(resptemp$season, levels = c("spring", "fall"), 
-				    labels = c("Spring", "Fall") )
+resptemp$season = factor(resptemp$season, 
+                         levels = c("spring", "fall"),
+                         labels = c("Spring", "Fall") )
 ```
+
+While we won't use it today, I find package **forcats** can be extremely useful when working with factors in R.
 
 ## Creating new variables in a dataset based on existing variables
 
@@ -762,9 +786,9 @@ Now that we have a single dataset to work with, let's practice creating a new va
 
 The dollar sign notation can get tedious once you start adding variables to datasets.  R has several built-in functions to help with this while still avoiding the `attach()` function, including `with()` and `transform()`.  The `mutate()` function from **dplyr** is also available for this.  We will be using `mutate()` today; note **dplyr** must be loaded via `library()` to use `mutate()`.  We've already done this.
 
-In `mutate()`, the first argument is the dataset we want to add variables to.  We then create one or more new variables, assigning variable names and using existing variables to create the new ones.  We don't need any dollar sign notation, as `mutate()` allows us to both assign new variable names and refer to existing variables without it.
+In `mutate()`, the first argument is the dataset we want to add variables to.  We then create one or more new variables, assigning variable names and using existing variables to create the new ones.  We don't need any dollar sign notation, as `mutate()` allows us to both assign new variable names and refer to existing variables that are in the dataset given as the first argument.
 
-When using `mutate`, I generally name the *mutated* dataset (the one with the new column in it) the same as the original dataset.  While we won't see it today, we can make multiple new variables at once in `mutate` by separating the new variables with commas.
+When using `mutate()`, I generally name the *mutated* dataset (the one with the new column in it) the same as the original dataset.  While we won't see it today, we can make multiple new variables at once in `mutate` by separating the new variables with commas.
 
 ```{r transform}
 resptemp = mutate(resptemp, tempf = 32 + ( (9/5)*Temp) )
@@ -786,7 +810,7 @@ Remember that our question of interest is about differences in mean respiration 
 knitr::include_graphics(here::here("images", "ifelse.png") )
 ```
 
-In `ifelse`, we list the *condition* we want to test first.  If the result of the test is `TRUE` for a row in the dataset, the first value given is assigned to that row.  If the result of the test is `FALSE`, the second value given is assigned.  
+In `ifelse()`, we list the *condition* we want to test as the first argument.  If the result of the test is `TRUE` for a row in the dataset, the value given to the `yes` argument is assigned to that row.  If the result of the test is `FALSE`, the `no` value is assigned.   
 
 Example code, combined with `mutate()` to add the new variable to the `resptemp` dataset, is below.  The condition we use is that the value of `Temp` is less than 8$^\circ$.
 
@@ -810,7 +834,7 @@ R treats missing values differently than other software packages you may have us
 mean(resptemp$DryWt)
 ```
 
-A missing value is something that we have no value for.  In R logic, if we try to average something that has no value (I think of this as something that doesn't exist) with some actual values, the result is impossible to calculate and so returns `NA`.  When you have missing values in R, you will need to specifically decide what you want to do with them as R isn't going to just ignore them for you.
+A missing value is something that we have no value for.  In R logic, if we try to average something that has no known value with some actual values, the result is impossible to calculate and so returns `NA`.  When you have missing values in R, you will need to specifically decide what you want to do with them.  R isn't going to just ignore them for you.
 
 ### The `na.rm` argument
 
@@ -879,7 +903,17 @@ qplot(x = tempgroup, y = Resp, data = resptemp)
 
 Notice we have a missing value in `tempgroup`, which shows up on the x axis.  We don't want to remove all the rows in the whole dataset that are missing because we have two rows with missing values but only 1 row that is missing `tempgroup`.  
 
-We can remove only the missing value in `tempgroup` using the `subset()` function with `is.na()`.  The `subset()` function is new to you.  Basically, we use `is.na()` to test if the `tempgroup` value on each row is `NA` or not.  Because we want to remove all the rows where `tempgroup` is **not** `NA`, we use `is.na()` with the not operator (`!`).  If the value is *not* NA, we keep it.  Using `subset()` we can now plot only the existing temperature groups.
+We can remove only the missing value in `tempgroup` using the `subset()` function and `is.na()`.  We haven't learned how to `subset()` data, but essentially we can choose only some rows to keep.
+
+For example, if we wanted a dataset containing only the `Cold` group we could use code like below.  We give the dataset to subset from and then a condition indicating which rows we want to keep.  This condition is like what we did with `ifelse()` above.  Here we keep all rows that meet the condition.
+
+```{r subset, exercise = TRUE}
+subset(resptemp, tempgroup == "Cold")
+```
+
+I'm not going to go into a ton of detail on this due to time constraints, but we can use `is.na()` as our condition to test if the `tempgroup` value on each row is `NA` or not.  Because we want to remove all the rows where `tempgroup` is **not** `NA`, we use `is.na()` with the not operator (`!`).  If the value is *not* NA, we keep it.  
+
+Passing the `subset()` code to the `data` argument I now plot only the existing temperature groups.
 
 ```{r qplot2, fig.width = 3.5, fig.height = 3.5}
 qplot(x = tempgroup, y = Resp, 
@@ -910,19 +944,6 @@ At this point I decided to make a new dataset without that missing `tempgroup` v
 resptemp2 = subset(resptemp, !is.na(tempgroup) )
 ```
 
-#### Adding the mean to a boxplot
-
-A boxplot shows the median, range, and interquartile range, but not the mean.  Since the focus of analysis is the means, I'll add a *layer* to the graphic to add the mean of each group on top of the boxplot as a red dot using `stat_summary()`. Layers are added with plus signs, `+`. 
-
-We will not be going through this code in detail.  This examples is so you have an example of doing this that you can explore later on your own if you wish.
-
-```{r qplot5, fig.width = 3.5, fig.height = 3.5}
-qplot(x = tempgroup, y = Resp, 
-      data = resptemp2, geom = "boxplot") +
-	stat_summary(fun = mean, geom = "point", 
-	             color = "red", size = 3)
-```
-
 #### Histogram
 
 Some people like histograms to check their dataset for skew and symmetry.  Here we make two histograms, one for each group, by setting the `fill` color of the histograms by `tempgroup`.  Notice the variable of interest in a histogram (`Resp` in our case) is on the x axis.
@@ -934,7 +955,7 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 
 #### Density plot
 
-The last example of plotting I give is primarily to show you how changing a factor can change your graphical output.  Let's make a density plot for each group, which is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again and use `alpha` to make the colors more transparent.
+The last example of plotting I give is primarily to show you how changing a factor can change your graphical output.  Let's make a density plot for each group, which is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again and use `alpha` to make the colors more transparent.  Using a value less than 1 increases transparency.
 
 ```{r qplot7, fig.width = 3.5, fig.height = 3.5}
 qplot(x = Resp, fill = tempgroup, data = resptemp2,
@@ -954,6 +975,16 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 	 geom = "density", alpha = I(.5) )
 ```
 
+#### Violin plot
+
+A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide bimodal distributions, which could be seen in a violin plot.  
+
+To make a violin plot we use `geom = "violin"` and define the x axis with the categorical variable and the y axis with the continuous variable of interest much like a boxplot.
+
+```{r qplot9, fig.width = 3.5, fig.height = 3.5}
+qplot(x = tempgroup, y = Resp, data = resptemp2,
+      geom = "violin")
+```
 
 ## Analysis using a two-sample test (finally!)
 
@@ -967,7 +998,7 @@ I am writing the code in the formula format, with the response variable listed f
 ( respunequal = t.test(Resp ~ tempgroup, data = resptemp2) )
 ```
 
-Notice the unequal variances t-test is the default, so if the variances seem reasonably equal you need to change the `var.equal` argument to `TRUE`.
+Notice the unequal variances t-test is the default (`?t.test`), so if you want a test that assumes equal variances among groups you need to change the `var.equal` argument to `TRUE`.
 
 ```{r t2}
 ( respequal = t.test(Resp ~ tempgroup, data = resptemp2, var.equal = TRUE) )
