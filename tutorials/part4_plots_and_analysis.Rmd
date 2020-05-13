@@ -16,7 +16,8 @@ library(learnr)
 if(!require("ggplot2")){
     install.packages("ggplot2", repos = "http://cran.us.r-project.org")
     library("ggplot2")
-}if(!require("dplyr")){
+}
+if(!require("dplyr")){
     install.packages("dplyr", repos = "http://cran.us.r-project.org")
     library("dplyr")
 }
@@ -115,9 +116,9 @@ If you decide to run through the entire workshop on your computer and not just i
 
 ## Graphical data exploration
 
-Before embarking on an analysis, we'll want to spend time exploring the dataset.  This usually involves calculating interesting data summaries and creating exploratory graphics to understand the dataset.  This gives us a chance to find mistakes and learn what the variables of interest look like as we start thinking about what statistical tool will help us answer our question of interest.  
+Before embarking on an analysis we'll want to spend time exploring the dataset.  This usually involves calculating interesting data summaries and creating exploratory graphics to better understand the dataset.  This gives us a chance to find mistakes and learn what the variables of interest look like as we start thinking about what statistical tool will help us answer our research question.  
 
-I will only be focusing on graphical data exploration today.  However, if you use R regularly you will want to learn how to make summaries for groups and other data manipulation tasks.  If you want to learn more about data manipulation in R you can check out, e.g., my data manipulation with **dplyr** workshop materials [here](https://ariel.rbind.io/workshop/datamanip/).
+I will be focusing on graphical data exploration in this tutorial.  However, if you use R regularly you will want to learn how to make summaries for groups and perform other data manipulation tasks.  If you want to learn more about data manipulation in R you can check out, e.g., my data manipulation with **dplyr** workshop materials [here](https://ariel.rbind.io/workshop/datamanip/).
 
 ###
 
@@ -125,7 +126,7 @@ I will only be focusing on graphical data exploration today.  However, if you us
 
 The research question we are working on addressing today is about differences in mean respiration for "Hot" vs "Cold" sites.  The dataset `resptemp` contains information about respiration in the variable `Resp` and the temperature groups in the variable `tempgroup`.  
 
-Take a look at the structure and a summary of the dataset in the code window below to reminder yourself what things look like.  Make note of the missing values: two are missing from `DryWt` and one from the temperature variables.
+Take a look at the structure and a summary of the dataset in the code window below to remind yourself what things look like.  Make note of the missing values: two are missing from `DryWt` and one from the temperature variables.
 
 ```{r resptemp, exercise = TRUE}
 
@@ -140,17 +141,17 @@ summary(resptemp)
 
 Much of the data exploration I do is with graphics.  Today we'll be using the function `qplot()` from package **ggplot2** to make simple exploratory graphics.  The "q" in `qplot` stands for "quick", so this is the function that we can use to make quick exploratory plots.  
 
-If we wanted to make more polished graphics for publication or presentation, we would want to switch to using the `ggplot()` function.  Making nice graphics with `ggplot()` is a [topic for another workshop](https://ariel.rbind.io/workshop/ggplot2/).
+If we wanted to make more polished graphics for a publication or presentation, we would switch to using the `ggplot()` function.  It allows for much more flexibility than `qplot()` does.  Making nice graphics with `ggplot()` is a [topic for another workshop](https://ariel.rbind.io/workshop/ggplot2/).
 
-Let's load the **ggplot2** package.  If working on your own computer you may need to install the package if you don't already have it installed already (`install.packages("ggplot2")`).  You learned how to install packages in the second tutorial.
+We'll load the **ggplot2** package here.  If working on your own computer you may need to install the package if you don't already have it installed (`install.packages("ggplot2")`).  You learned how to install packages in the second tutorial.
 
-```{r ggplot2, message = FALSE}
+```{r ggplot2, message = FALSE, exercise = TRUE}
 library(ggplot2)
 ```
 
 ## Scatterplot
 
-We'll start with a scatterplot of `Resp` by `tempgroup`, with `Resp` on the y axis and `tempgroup` on the x axis.  We will use the `data` argument to define the dataset that contains the variables we want to graph.  This makes it so we don't have to (and shouldn't!) use dollar sign notation.  
+We'll start with a scatterplot of `Resp` for each `tempgroup`, with `Resp` on the y axis and `tempgroup` on the x axis.  We will use the `data` argument to define the dataset that contains the variables we want to graph.  This makes it so we don't have to (and shouldn't!) use dollar sign notation.  
 
 The scatterplot is the default plot type in `qplot()`.
 
@@ -158,55 +159,32 @@ The scatterplot is the default plot type in `qplot()`.
 qplot(x = tempgroup, y = Resp, data = resptemp)
 ```
 
+In this section I am going to focus on how to make different plots in R.  However, when actually doing a real analysis you would focus on what you *see* in the plots, making note of anything unusual or interesting.
+
 ###
 
 ### Using `is.na()` to remove missing values
 
-Notice we have a missing value in `tempgroup`, which shows up on the x axis.  You learned how to remove all the rows that contain missing values with `na.omit()` in the third tutorial. That doesn't work here, because that will remove two rows (because of `DryWt`) but there is only 1 row that has a missing value in `tempgroup`.  
+You probably noticed that the missing value in `tempgroup` shows up as a separate group on the x axis in the plot above.  If we already know we have a missing value and plan to exclude it from analysis, we don't need this to be in the plots.  We would want to remove the `NA` row from the dataset.
 
-We can remove only the missing value in `tempgroup` using the `subset()` function and `is.na()`.  We haven't learned how to `subset()` data, but essentially we can choose only some rows to keep.
+You learned how to remove all the rows that contain missing values with `na.omit()` in the third tutorial. That doesn't work here, because that will remove two rows total since we have two missing values in `DryWt`. Using `na.omit()` would remove too many rows and so we need a different option.
 
-For example, if we wanted a dataset containing only the `Cold` group we could use code like below.  We give the dataset to subset from and then a condition indicating which rows we want to keep.  This condition is like what we did with `ifelse()` in the third tutorial.  Here we keep all rows that meet the condition.
+### The `subset()` function
 
-```{r subset, exercise = TRUE}
+We can remove only the missing value in `tempgroup` using the `subset()` function and `is.na()`.  We haven't learned how to us `subset()` to subset a dataset in this tutorial yet.  In essence the function allows us to choose which rows we want to keep.
+
+For example, if we wanted a dataset containing only the `Cold` group we could use the code shown below.  We give the dataset we want to subset and then a condition indicating which rows we want to keep.  This condition is like what we did with `ifelse()` in the third tutorial.  In `subset()` we keep all rows that meet the condition.
+
+
+```{r cold, exercise = TRUE}
 subset(resptemp, tempgroup == "Cold")
 ```
 
 ###
 
-I'm not going to go into a ton of detail on this due to time constraints, but we can use `is.na()` as our condition to test if the `tempgroup` value on each row is `NA` or not.  Because we want to remove all the rows where `tempgroup` is **not** `NA`, we use `is.na()` with the not operator (`!`).  If the value is *not* NA, we keep it.  
+I'm not going to go into a ton of detail on this due to time constraints, but we can use `is.na()` as our condition in `subset()`.  Because we want to remove all the rows where `tempgroup` is **not** `NA`, we use `is.na(tempgroup)` with the not operator (`!`).  If the value is *not* NA, we keep the row.  In this way the rows with missing values are removed from the dataset.
 
-Passing the `subset()` code to the `data` argument I now plot only the existing temperature groups.  
-
-```{r qplot2, exercise = TRUE}
-qplot(x = tempgroup, y = Resp, 
-      data = subset(resptemp, !is.na(tempgroup) ) )
-```
-
-## Boxplot
-
-We can make a boxplot instead of a scatterplot by using the `geom` argument to define the plot type.  For a boxplot we use `"boxplot"`.
-
-```{r qplot3, exercise = TRUE}
-qplot(x = tempgroup, y = Resp, 
-      data = resptemp, 
-      geom = "boxplot")
-
-```
-
-And, again, we might want to take out that missing value in `tempgroup`.
-
-```{r qplot4, exercise = TRUE}
-qplot(x = tempgroup, y = Resp, 
-      data = subset(resptemp, !is.na(tempgroup) ), 
-	 geom = "boxplot")
-```
-
-###
-
-###
-
-At this point I decided to make a new dataset without that missing `tempgroup` value.  We won't be using that value in any analyses today, and it was a nuisance to have to remove it for each plot.  I name the new dataset `resptemp2`.  This dataset has only 59 rows since one row is removed.
+Since I won't be using the row with the missing value in this analysis I decided to make a new dataset without that missing `tempgroup` value.  I name the new dataset `resptemp2`.  This dataset has only 59 rows instead of 60 since one row is removed.
 
 ```{r nona, exercise = TRUE}
 resptemp2 = subset(resptemp, !is.na(tempgroup) )
@@ -217,17 +195,45 @@ nrow(resptemp2)
 resptemp2 = subset(resptemp, !is.na(tempgroup) )
 ```
 
+###
+
+Now when I make a scatterplot using the dataset without the missing value the x axis has only the two temperature groups of interest.
+
+```{r qplot2, exercise = TRUE, exercise.setup = "setup1"}
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp2)
+```
+
+## Boxplot
+
+We can make a boxplot instead of a scatterplot by using the `geom` argument to define the plot type.  For a boxplot we use `"boxplot"`.  All other elements of the code, including the x and y axes and the dataset, are the same.  
+
+I use the dataset without the missing value here and in the rest of the plots.
+
+```{r qplot3, exercise = TRUE, exercise.setup = "setup1"}
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp2, 
+      geom = "boxplot")
+
+```
+
 ## Histogram
 
 Some people like histograms to check their dataset for skew and symmetry.  
 
-Here we make two histograms, one for each temperature group, by setting the `fill` color of the histograms by `tempgroup`.  This will also add a legend to the plot.  Notice the variable of interest in a histogram (`Resp` in our case) is on the x axis.  This is because histograms show the frequency distribution, which `qplot()` calculates for us.
+Here I will make two histograms simultaneously, one for each temperature group, by setting the `fill` color of the histograms by `tempgroup`.  This will also add a legend to the plot.  
+
+Notice the variable of interest in a histogram (`Resp` in our case) is on the x axis.  This is because histograms show the frequency distribution of a single variable, which `qplot()` calculates for us.
 
 ```{r qplot6, exercise = TRUE, exercise.setup = "setup1"}
 qplot(x = Resp, fill = tempgroup, 
-      data = resptemp2, 
-	 geom = "histogram")
+      data = resptemp2,
+      geom = "histogram")
 ```
+
+You can see we get a message here from `qplot()` about the bin widths.  You can choose to have more or less bars in the histogram by changing the bin width.  I'm sticking with the default in this plot.
+
+###
 
 ###
 
@@ -239,38 +245,42 @@ You can see that `fill` changes the color of the inside of the boxes in a histog
 
 ## Density plot
 
-The next example of plotting I give is primarily to show you how changing a factor can change your graphical output.  Let's make a density plot for each group, which is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again.  
+The next example of plotting I give is primarily to show you how changing a factor can change the way your plot looks.  We'll start by making a density plot for each group.  A density plot is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again so we get a separate plot for each temperature group.  
 
-You can see I also add `alpha`, which makes the colors more transparent because I show a value less than 1.  To see what it looks like without transparency you can delete that part of the code and run the plot again.
+You can see I also add `alpha`, which makes the colors more transparent because I use a value less than 1.  To see what it looks like without transparency you can delete that part of the code and run the plot code again.
 
 ```{r qplot7, exercise = TRUE, exercise.setup = "setup1"}
-qplot(x = Resp, fill = tempgroup, data = resptemp2,
-	 geom = "density", alpha = I(.5) )
+qplot(x = Resp, fill = tempgroup, 
+      data = resptemp2,
+      geom = "density", alpha = I(.5) )
 ```
 
 ###
 
-The order of factor levels affects the plot.  In the last few plots you saw that `Cold` came before `Hot` in the legend.  That's because `qplot()` uses the default factor level order and `C` comes before `H`.  We can change the order by changing the levels of the factor `tempgroup`.
+###
 
-You learned how to do this is the third tutorial.  
+The order of the factor levels affects the plot.  In the last two plots you saw that `Cold` came before `Hot` in the legend.  That's because `qplot()` uses the default factor level order and `C` comes before `H` in the alphabet.  We can change the order by manually changing `tempgroup` to a factor and setting the level order.
 
-```{r factoragain, exercise = TRUE}
+This is done by setting the levels order with the `levels` argument, with `Hot` coming before `Cold`.  This is review from the third tutorial.  
+
+```{r factoragain, exercise = TRUE, exercise.setup = "setup2"}
 resptemp2$tempgroup = factor(resptemp2$tempgroup, levels = c("Hot", "Cold") )
-resptempt2
+resptemp2$tempgroup
 ```
 
-```{r setup1, echo = FALSE}
+```{r setup2, echo = FALSE}
 resptemp2 = subset(resptemp, !is.na(tempgroup) )
 resptemp2$tempgroup = factor(resptemp2$tempgroup, levels = c("Hot", "Cold") )
 ```
 
 ###
 
-Look at how both the plot and the legend changed because we changed the order level of the factor variable.
+Look at how both the plot and the legend changed because we changed the order level of the factor variable.  The code hasn't changed, but the plot changes because we changed the dataset used in the plot.
 
 ```{r qplot8, exercise = TRUE, exercise.setup = "setup2"}
-qplot(x = Resp, fill = tempgroup, data = resptemp2,
-	 geom = "density", alpha = I(.5) )
+qplot(x = Resp, fill = tempgroup, 
+      data = resptemp2,
+      geom = "density", alpha = I(.5) )
 ```
 
 ###
@@ -287,14 +297,15 @@ qplot(x = tempgroup, y = Resp, data = resptemp2)
 
 ## Violin plot
 
-A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide bimodal distributions, which could be seen in a violin plot.  
+A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide things like bimodal distributions, which we can see in a violin plot.  
 
-To make a violin plot we use `geom = "violin"` and define the x axis with the categorical variable and the y axis with the continuous variable of interest much like a boxplot.
+To make a violin plot we use `geom = "violin"` and define the x axis with the categorical variable and the y axis with the continuous variable of interest just like we did for a boxplot.
 
-You might want to play around with adding colors or fills for the violin plot.
+You might want to play around with adding colors or fills by `tempgroup` for the violin plot to see how it looks.
 
 ```{r qplot9, exercise = TRUE, exercise.setup = "setup2"}
-qplot(x = tempgroup, y = Resp, data = resptemp2,
+qplot(x = tempgroup, y = Resp, 
+      data = resptemp2,
       geom = "violin")
 ```
 
@@ -302,35 +313,41 @@ qplot(x = tempgroup, y = Resp, data = resptemp2,
 
 Let's compare the respiration rate between temperature groups with a two-sample test.  Each of us would have to decide if the assumptions are reasonable for a two-sample t-test, a Welch two-sample t-test if the variances are unequal, or possibly a Wilcoxon rank-sum test if there is extreme skew.  In R, there is a built-in function `t.test()` for doing t-tests and `wilcox.test()` for rank-sum and signed-rank tests.
 
-### T-test
+###
 
-I am writing the code in the formula format, with the response variable listed first and the explanatory variable after the tilde.  I also define the dataset the variables are in with the `data` argument, and so I avoid using dollar sign notation.
+### Two-sample t-test
 
-```{r t, exericse = TRUE, exercise.setup = "setup2"}
+I am writing the code in `t.test()` using the *formula* format.  Using a formula, the response variable is listed first (`Resp`), then a tilde, and then the name of the explanatory variable (`tempgroup`).  Using a formula like this is very common when fitting models in R.  
+
+You see I also define the dataset the variables are in with the `data` argument, and so I avoid using dollar sign notation.
+
+```{r t, exercise = TRUE, exercise.setup = "setup2"}
 t.test(Resp ~ tempgroup, data = resptemp2)
 ```
 
-You can see in the output that this is a Welch t-test, which doesn't not assume constant variance.  If you go to the help page for `t.test()` (`?t.test`) you will see the `var.equal` argument defaults to `FALSE`.  This argument is:
+You can see in the output that this is a Welch t-test, which does not assume constant variance.  If you go to the help page for `t.test()` (`?t.test`) you will see the `var.equal` argument defaults to `FALSE`.  This argument is:
 
 > a logical variable indicating whether to treat the two variances as being equal. If TRUE then the pooled variance is used to estimate the variance otherwise the Welch (or Satterthwaite) approximation to the degrees of freedom is used.
 
 ###
 
-To do a t-test assuming constant variance you would use `var.equal = TRUE`.  Add this to the code above to see how the output changes.
+To do a t-test assuming constant variance you would use `var.equal = TRUE`.  Add this to the `t.test()` code you ran above to see how the output changes.
 
 ```{r t2, exercise = TRUE, exercise.setup = "setup2"}
 
 ```
 
-```{r t2-solution, exercise = TRUE, exercise.setup = "setup2"}
+```{r t2-solution}
 t.test(Resp ~ tempgroup, data = resptemp2, var.equal = TRUE)
 ```
 
 ### Wilcoxon rank-sum test
 
-The `wilcox.test()` function works much like `t.test()`, but does the nonparametric Wilcoxon rank-sum test instead of a t-test.  In this case we get a useful warning (which is not an error).  See the `exact` argument in the documentation to learn more about this warning.
+The `wilcox.test()` function works much like `t.test()`, but does the nonparametric Wilcoxon rank-sum test instead of a t-test.  I use the same formula as I did with the t-test.
 
-```{r wilc, exercise = TRUE}
+In this case we get a useful warning (which is not an error).  See the `exact` argument in the documentation to learn more about this warning.
+
+```{r wilc, exercise = TRUE, exercise.setup = "setup2"}
 wilcox.test(Resp ~ tempgroup, data = resptemp2)
 ```
 
@@ -338,4 +355,4 @@ To be clear, you wouldn't do all of these tests.  Instead, you would have chosen
 
 ###
 
-With the analysis finished, our R work is done.  In a real analysis, we would spend time making a final graphic or table of results.  That is beyond the scope of this workshop, however, so we'll end here knowing there is more to learn in R but with a good start on the basics.  
+With the analysis finished, our R work is done.  In a real analysis, we would spend time making a final graphic or table of results.  That is beyond the scope of this workshop, however, so we'll end here knowing there is more to learn in R but with a good start on the basics. 

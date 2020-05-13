@@ -953,6 +953,8 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 	 geom = "histogram")
 ```
 
+You can see we get a message here from `qplot()` about the bin widths.  You can choose to have more or less bars in the histogram by changing the bin width.  I'm sticking with the default in this plot.
+
 #### Density plot
 
 The last example of plotting I give is primarily to show you how changing a factor can change your graphical output.  Let's make a density plot for each group, which is kind of like a smoothed histogram.  We'll use `tempgroup` for the `fill` color again and use `alpha` to make the colors more transparent.  Using a value less than 1 increases transparency.
@@ -962,7 +964,9 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 	 geom = "density", alpha = I(.5) )
 ```
 
-Now let's change the order of the levels of the factor `tempgroup` like we learned how to do earlier, so `Hot` will come before `Cold` instead of vice versa.
+The order of the factor levels affects the plot.  In the last two plots you saw that `Cold` came before `Hot` in the legend.  That's because `qplot()` uses the default factor level order and `C` comes before `H` in the alphabet.  
+
+We can change the order by manually changing `tempgroup` to a factor and setting the level order like we learned to do earlier.  Here let's make `Hot` come before `Cold`.
 
 ```{r factoragain}
 resptemp2$tempgroup = factor(resptemp2$tempgroup, levels = c("Hot", "Cold") )
@@ -977,7 +981,7 @@ qplot(x = Resp, fill = tempgroup, data = resptemp2,
 
 #### Violin plot
 
-A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide bimodal distributions, which could be seen in a violin plot.  
+A violin plot is a blend of a boxplot and a density plot.  The boxplot can hide things like bimodal distributions, which we can see in a violin plot.  
 
 To make a violin plot we use `geom = "violin"` and define the x axis with the categorical variable and the y axis with the continuous variable of interest much like a boxplot.
 

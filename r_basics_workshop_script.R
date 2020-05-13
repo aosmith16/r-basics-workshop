@@ -795,7 +795,7 @@ qplot(x = tempgroup, y = Resp, data = resptemp2,
 
 # Notice that unequal variance is the default setting in t.test
 # I named the resulting output, but also printed it
-	# to the console using an extra pair of paranetheses
+	# to the console using an extra pair of parantheses
 # Using the built-in "data" argument avoids the use of dollar sign notation
 
 ( respunequal = t.test(Resp ~ tempgroup, data = resptemp2) )
